@@ -11,7 +11,8 @@ import { CalBodyComponent } from './component/cal-body/cal-body.component';
   declarations: [
     AppComponent,
     ToggleComponent,
-    CalBodyComponent
+    CalBodyComponent,
+   
   ],
   imports: [
     BrowserModule,

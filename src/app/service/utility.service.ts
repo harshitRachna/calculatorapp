@@ -110,12 +110,12 @@ export class UtilityService {
         }
       }
     });
-    console.log(num);
+ 
 
     return num;
   }
 
-  
+
 
   addcalexp(value: string, inputId: string, resutlId: string): boolean {
     const span = document.createElement('span'),

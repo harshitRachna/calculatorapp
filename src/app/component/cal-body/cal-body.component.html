@@ -10,6 +10,6 @@
 
     </div>
     <div class="claculator-keys">
-
+    <button class="sign-type{{btn.type}}" *ngFor='let btn of buttons' [value]="btn.sign"> {{btn.sign}}</button>        
     </div>
 </div>
