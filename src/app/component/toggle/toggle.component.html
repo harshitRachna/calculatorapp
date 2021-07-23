@@ -1,0 +1,6 @@
+<div class="center-btn">
+    <div class="toggel-btn {{toggle.mode}}">
+        <a  [ngClass]="{'light': toggle.mode==='light'}" (click)='toggle.mode= "light"'><i class="far fa-sun"></i></a>
+        <a [ngClass]="{'dark': toggle.mode==='dark'}" (click)='toggle.mode="dark"'><i class="far fa-moon"></i></a>
+    </div>
+</div>

@@ -1,0 +1,56 @@
+.center-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  .toggel-btn {
+    background: rgb(167, 167, 167);
+    display: flex;
+    justify-content: space-between;
+    width: 25%;
+    height: 35px;
+    border-radius: 15px;
+    overflow: hidden;
+    border: none;
+
+
+    a {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      width: 50%;
+      height: 100%;
+      color: rgb(161, 161, 161);
+      cursor: pointer;
+      transition: all .2s ease-in;
+    }
+
+    a:active {
+      transform: scale(.99);
+    }
+
+    a.dark {
+      color: #eee;
+    }
+
+    a.light {
+      color: #333;
+    }
+
+
+  }
+
+  .toggel-btn.dark {
+    background: #333;
+  }
+
+  .toggel-btn.light {
+    background: #f5f5f5;
+  }
+}
