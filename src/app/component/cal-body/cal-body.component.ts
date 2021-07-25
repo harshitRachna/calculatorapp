@@ -10,6 +10,7 @@ import { UtilityService } from 'src/app/service/utility.service';
 export class CalBodyComponent implements OnInit {
   showstatus: boolean = false;
   constructor(public toggle: TogglemodeService, private us: UtilityService) {}
+  // calculator buttons in order
   buttons = [
     { sign: 'AC', type: 'A' },
     { sign: '±', type: 'A' },
@@ -26,8 +27,8 @@ export class CalBodyComponent implements OnInit {
     { sign: 1 },
     { sign: 2 },
     { sign: 3 },
-    { sign: '+' , type:'B'},
-    { sign: '' },
+    { sign: '+', type: 'B' },
+    { sign: '', disabled: true },
     { sign: 0 },
     { sign: '.' },
     { sign: '=', type: 'B' },
@@ -36,5 +37,22 @@ export class CalBodyComponent implements OnInit {
     window?.addEventListener('keyup', (e) => {
       this.showstatus = this.us.addcalexp(e.key, 'enteredvalue', 'calcresult');
     });
+  }
+  calcexp(clickbtn: any): void {
+    switch (clickbtn.target.value) {
+      case '×':
+        this.showstatus = this.us.addcalexp('*', 'enteredvalue', 'calcresult');
+        break;
+      case '÷':
+        this.showstatus = this.us.addcalexp('/', 'enteredvalue', 'calcresult');
+        break;
+      default:
+        this.showstatus = this.us.addcalexp(
+          clickbtn.target.value,
+          'enteredvalue',
+          'calcresult'
+        );
+        break;
+    }
   }
 }
