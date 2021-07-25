@@ -116,7 +116,7 @@ export class UtilityService {
             num -= calArray[i + 1];
             break;
           case '%':
-            num %= calArray[i + 1];
+            num = (num / 100) * calArray[i + 1];
             break;
           case 'x':
             num *= calArray[i + 1];
@@ -127,7 +127,7 @@ export class UtilityService {
         }
       }
     });
-   
+
     return num;
   }
 
