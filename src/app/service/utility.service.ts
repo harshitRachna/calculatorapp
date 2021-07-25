@@ -127,7 +127,7 @@ export class UtilityService {
         }
       }
     });
-
+   
     return num;
   }
 
@@ -186,7 +186,7 @@ export class UtilityService {
       this.numbers = [this.calcTotal];
       this.calcArray = [];
       input.innerHTML = this.calcTotal.toString();
-      if (this.calcTotal) result.textContent = '';
+      result.textContent = '';
       this.calc = true;
       return true;
     }
