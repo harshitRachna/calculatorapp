@@ -1,3 +1,4 @@
+import { JsonPipe } from '@angular/common';
 import { Injectable } from '@angular/core';
 
 export interface sign {
@@ -32,9 +33,11 @@ export class UtilityService {
         obj = { type: 'nev', sign: '-' };
         break;
       case '*':
+      case 'x':
         obj = { type: 'sign', sign: 'x' };
         break;
       case '/':
+      case '÷':
         obj = { type: 'sign', sign: '÷' };
         break;
       case Number(keypressed).toString():
@@ -127,7 +130,7 @@ export class UtilityService {
         }
       }
     });
-
+    num = Number(num.toFixed(4));
     return num;
   }
 
@@ -182,7 +185,11 @@ export class UtilityService {
         return false;
 
       this.calcTotal = this.calculate(this.calcArray);
-
+      if (!localStorage.calchistory)
+        localStorage.setItem(
+          'calchistory',
+          JSON.stringify({ calcArray: this.calcArray, total: this.calcTotal })
+        );
       this.numbers = [this.calcTotal];
       this.calcArray = [];
       input.innerHTML = this.calcTotal.toString();
