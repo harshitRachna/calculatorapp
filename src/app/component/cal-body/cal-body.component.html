@@ -11,6 +11,6 @@
     </div>
     <div class="claculator-keys">
         <button class="sign-type{{btn.type}}" [disabled]='btn.disabled' *ngFor='let btn of buttons'
-            (click)="calcexp($event)" [value]="btn.sign"> {{btn.sign}}</button>
+            (click)="calcexp(btn.sign)" [value]="btn.sign"> {{btn.sign}}</button>
     </div>
 </div>

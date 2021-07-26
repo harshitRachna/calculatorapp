@@ -1,3 +1,4 @@
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { Component, OnInit } from '@angular/core';
 import { TogglemodeService } from 'src/app/service/togglemode.service';
 import { UtilityService } from 'src/app/service/utility.service';
@@ -16,30 +17,30 @@ export class CalBodyComponent implements OnInit {
     { sign: '±', type: 'A' },
     { sign: '%', type: 'A' },
     { sign: '÷', type: 'B' },
-    { sign: 7 },
-    { sign: 8 },
-    { sign: 9 },
+    { sign: '7' },
+    { sign: '8' },
+    { sign: '9' },
     { sign: '×', type: 'B' },
-    { sign: 4 },
-    { sign: 5 },
-    { sign: 6 },
+    { sign: '4' },
+    { sign: '5' },
+    { sign: '6' },
     { sign: '-', type: 'B' },
-    { sign: 1 },
-    { sign: 2 },
-    { sign: 3 },
+    { sign: '1' },
+    { sign: '2' },
+    { sign: '3' },
     { sign: '+', type: 'B' },
     { sign: '', disabled: true },
-    { sign: 0 },
+    { sign: '0' },
     { sign: '.' },
     { sign: '=', type: 'B' },
   ];
   ngOnInit(): void {
     window?.addEventListener('keyup', (e) => {
-      this.showstatus = this.us.addcalexp(e.key, 'enteredvalue', 'calcresult');
+      this.calcexp(e.key);
     });
   }
   calcexp(clickbtn: any): void {
-    switch (clickbtn.target.value) {
+    switch (clickbtn) {
       case '×':
         this.showstatus = this.us.addcalexp('*', 'enteredvalue', 'calcresult');
         break;
@@ -48,7 +49,7 @@ export class CalBodyComponent implements OnInit {
         break;
       default:
         this.showstatus = this.us.addcalexp(
-          clickbtn.target.value,
+          clickbtn,
           'enteredvalue',
           'calcresult'
         );

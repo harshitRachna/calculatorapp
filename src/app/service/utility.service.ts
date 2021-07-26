@@ -106,26 +106,46 @@ export class UtilityService {
     return enteredkey;
   }
 
+  // handel any multiplication and division operation
+  muldiv(array: any): any {
+    if (array.includes('÷')) {
+      const index = array.indexOf('÷'),
+        n = array[index - 1] / array[index + 1];
+
+      array.splice(index - 1, 3, n);
+
+      return this.muldiv(array);
+    } else if (array.includes('x')) {
+      const index = array.indexOf('x'),
+        n = array[index - 1] * array[index + 1];
+
+      array.splice(index - 1, 3, n);
+      return this.muldiv(array);
+    }
+
+    return array;
+  }
+
   // method to calculate the result
   calculate(calArray: any) {
-    let num = calArray[0];
-    calArray.forEach((numsign: any, i: number) => {
+    let arrcal = [...calArray];
+
+    arrcal = this.muldiv(arrcal);
+
+    let num = arrcal[0];
+
+    arrcal.forEach((numsign: any, i: number) => {
       if (typeof numsign === 'string') {
         switch (numsign) {
           case '+':
-            num += calArray[i + 1];
+            num += arrcal[i + 1];
             break;
           case '-':
-            num -= calArray[i + 1];
+            num -= arrcal[i + 1];
             break;
-          case '%':
-            num = (num / 100) * calArray[i + 1];
-            break;
-          case 'x':
-            num *= calArray[i + 1];
-            break;
+
           case '÷':
-            num /= calArray[i + 1];
+            num /= arrcal[i + 1];
             break;
         }
       }
