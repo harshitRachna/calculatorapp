@@ -61,7 +61,9 @@ export class UtilityService {
     return obj;
   }
   addnum() {
+    // check if the numbers array is empty
     if (this.numbers.length === 0) return;
+
     let num = this.numbers.join(''),
       number = Number(num),
       check = number.toString();
@@ -69,63 +71,75 @@ export class UtilityService {
     if (num[0] === '0') num = num.replace('0', '');
     if (check == num) this.calcArray.push(number);
   }
-  // perform the requered operation
+  // perform the required operation
   operationsOnSign(enteredkey: sign): sign {
+    // check if user not clicked '=' or Enter button
     if (enteredkey.type !== 'cal') {
       if (enteredkey.type === '') return { type: '', sign: '' };
+      // check if user entered point value
       if (enteredkey.type === 'point') {
         if (!this.numbers.includes('.')) {
           const number = '.';
           this.numbers.push(number);
         }
       }
+      // check if user entered number
       if (enteredkey.type === 'number') {
         this.numbers.push(Number(enteredkey.sign));
       }
 
+      // check if user clicked '±' button
       if (enteredkey.type === 'nev') {
         if (this.numbers[0] === '-') this.numbers.shift();
         else this.numbers.unshift(enteredkey.sign);
       }
+      // check if user entered any mathematical operator
       if (enteredkey.type === 'sign') {
+        // method call to push the entered numbers in calArray.
         this.addnum();
-        console.log(this.calcArray[this.calcArray.length - 1].sign);
 
+        // check if the last value of the calArray is mathematical operator or if the array is empty
         if (
           this.identifySign(this.calcArray[this.calcArray.length - 1]).type ===
             'sign' ||
           !this.calcArray[0]
         )
           return { type: '', sign: '' };
+        
+        // check if the last operator of the calcArray is not any mathematical operator except '%'
         if (
           this.identifySign(this.calcArray[this.calcArray.length - 1]).type !==
             'sign' ||
           this.calcArray[this.calcArray.length - 1] === '%'
         )
           this.calcTotal = this.calculate(this.calcArray);
+        
+        // push the mathematical operator in calcArray
         this.calcArray.push(enteredkey.sign);
         this.numbers = [];
       }
-    } else {
-    }
+    } 
     return enteredkey;
   }
 
-  // handel any multiplication and division operation
+  //method that accepts that array and solve the '*','÷' & '%' 
   muldiv(array: any): any {
+
     if (array.includes('÷')) {
       const index = array.indexOf('÷'),
-        n = array[index - 1] / array[index + 1];
+     n = array[index - 1] / array[index + 1];
 
       array.splice(index - 1, 3, n);
 
       return this.muldiv(array);
+
     } else if (array.includes('x')) {
       const index = array.indexOf('x'),
         n = array[index - 1] * array[index + 1];
 
       array.splice(index - 1, 3, n);
       return this.muldiv(array);
+
     } else if (array.includes('%')) {
       const index = array.indexOf('%'),
         n = array[index + 1]
@@ -134,6 +148,7 @@ export class UtilityService {
 
       array.splice(index - 1, array[index + 1] ? 3 : 2, n);
       return this.muldiv(array);
+
     }
 
     return array;
@@ -147,6 +162,7 @@ export class UtilityService {
 
     let num = arrcal[0];
 
+    
     arrcal.forEach((numsign: any, i: number) => {
       if (typeof numsign === 'string') {
         switch (numsign) {
@@ -163,6 +179,7 @@ export class UtilityService {
     return num;
   }
 
+  // method that handles the point and '±' button operation
   forNev(input: any, type: string): void {
     if (type !== 'point')
       if (this.numbers[1] && this.numbers[1].toString()[0] === '-') {
@@ -171,6 +188,7 @@ export class UtilityService {
       }
 
     input.innerHTML = '';
+
     this.calcArray.forEach((value: any) => {
       const span = document.createElement('span'),
         signtype = this.identifySign(value);
@@ -204,6 +222,7 @@ export class UtilityService {
     }
 
     if (enteredkey.type === 'cal') {
+      
       this.addnum();
 
       this.calcTotal = this.calculate(this.calcArray);
