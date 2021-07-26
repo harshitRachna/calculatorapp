@@ -1,4 +1,3 @@
-import { JsonPipe } from '@angular/common';
 import { Injectable } from '@angular/core';
 
 export interface sign {
@@ -90,13 +89,19 @@ export class UtilityService {
       }
       if (enteredkey.type === 'sign') {
         this.addnum();
+        console.log(this.calcArray[this.calcArray.length - 1].sign);
+
         if (
           this.identifySign(this.calcArray[this.calcArray.length - 1]).type ===
             'sign' ||
           !this.calcArray[0]
         )
           return { type: '', sign: '' };
-        if (this.calcArray.length % 2 !== 0)
+        if (
+          this.identifySign(this.calcArray[this.calcArray.length - 1]).type !==
+            'sign' ||
+          this.calcArray[this.calcArray.length - 1] === '%'
+        )
           this.calcTotal = this.calculate(this.calcArray);
         this.calcArray.push(enteredkey.sign);
         this.numbers = [];
@@ -120,6 +125,14 @@ export class UtilityService {
         n = array[index - 1] * array[index + 1];
 
       array.splice(index - 1, 3, n);
+      return this.muldiv(array);
+    } else if (array.includes('%')) {
+      const index = array.indexOf('%'),
+        n = array[index + 1]
+          ? (array[index - 1] / 100) * array[index + 1]
+          : array[index - 1] / 100;
+
+      array.splice(index - 1, array[index + 1] ? 3 : 2, n);
       return this.muldiv(array);
     }
 
@@ -193,19 +206,17 @@ export class UtilityService {
     if (enteredkey.type === 'cal') {
       this.addnum();
 
+      this.calcTotal = this.calculate(this.calcArray);
       if (
-        this.identifySign(this.calcArray[this.calcArray.length - 1]).type ===
-          'sign' ||
+        (this.identifySign(this.calcArray[this.calcArray.length - 1]).type ===
+          'sign' &&
+          this.calcArray[this.calcArray.length - 1] !== '%') ||
         !this.calcArray[0]
       )
         return false;
 
       this.calcTotal = this.calculate(this.calcArray);
-      if (!localStorage.calchistory)
-        localStorage.setItem(
-          'calchistory',
-          JSON.stringify({ calcArray: this.calcArray, total: this.calcTotal })
-        );
+
       this.numbers = [this.calcTotal];
       this.calcArray = [];
       input.innerHTML = this.calcTotal.toString();
