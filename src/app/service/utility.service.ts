@@ -143,10 +143,6 @@ export class UtilityService {
           case '-':
             num -= arrcal[i + 1];
             break;
-
-          case '÷':
-            num /= arrcal[i + 1];
-            break;
         }
       }
     });
