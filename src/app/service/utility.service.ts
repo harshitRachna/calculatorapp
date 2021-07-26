@@ -22,6 +22,7 @@ export class UtilityService {
   // method to identify the entered input is a sign or number
   identifySign(keypressed: string): sign {
     let obj: any = {};
+
     switch (keypressed) {
       case '+':
       case '-':
@@ -40,6 +41,7 @@ export class UtilityService {
         obj = { type: 'sign', sign: '÷' };
         break;
       case '-1':
+      case 'Backspace':
         obj = { type: 'back', sign: keypressed };
         break;
       case Number(keypressed).toString():
