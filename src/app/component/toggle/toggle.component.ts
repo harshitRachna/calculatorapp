@@ -7,7 +7,7 @@ import { TogglemodeService } from 'src/app/service/togglemode.service';
   styleUrls: ['./toggle.component.scss']
 })
 export class ToggleComponent implements OnInit {
-  mode: string = 'light';
+  
   constructor(public toggle:TogglemodeService) { }
 
   ngOnInit(): void {

@@ -1,3 +1,4 @@
+import { HtmlParser } from '@angular/compiler';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { Component, OnInit } from '@angular/core';
 import { TogglemodeService } from 'src/app/service/togglemode.service';
@@ -29,7 +30,7 @@ export class CalBodyComponent implements OnInit {
     { sign: '2' },
     { sign: '3' },
     { sign: '+', type: 'B' },
-    { sign: '', disabled: true },
+    { sign: '-1', html: 'fa-backspace' ,disabled:false },
     { sign: '0' },
     { sign: '.' },
     { sign: '=', type: 'B' },

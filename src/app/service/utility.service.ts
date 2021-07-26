@@ -39,6 +39,9 @@ export class UtilityService {
       case '÷':
         obj = { type: 'sign', sign: '÷' };
         break;
+      case '-1':
+        obj = { type: 'back', sign: keypressed };
+        break;
       case Number(keypressed).toString():
         obj = { type: 'number', sign: keypressed };
         break;
@@ -73,6 +76,10 @@ export class UtilityService {
   }
   // perform the required operation
   operationsOnSign(enteredkey: sign): sign {
+    if (enteredkey.type === 'back') {
+      return enteredkey;
+    }
+
     // check if user not clicked '=' or Enter button
     if (enteredkey.type !== 'cal') {
       if (enteredkey.type === '') return { type: '', sign: '' };
@@ -105,41 +112,30 @@ export class UtilityService {
           !this.calcArray[0]
         )
           return { type: '', sign: '' };
-        
-        // check if the last operator of the calcArray is not any mathematical operator except '%'
-        if (
-          this.identifySign(this.calcArray[this.calcArray.length - 1]).type !==
-            'sign' ||
-          this.calcArray[this.calcArray.length - 1] === '%'
-        )
-          this.calcTotal = this.calculate(this.calcArray);
-        
+
         // push the mathematical operator in calcArray
         this.calcArray.push(enteredkey.sign);
         this.numbers = [];
       }
-    } 
+    }
     return enteredkey;
   }
 
-  //method that accepts that array and solve the '*','÷' & '%' 
+  //method that accepts that array and solve the '*','÷' & '%'
   muldiv(array: any): any {
-
     if (array.includes('÷')) {
       const index = array.indexOf('÷'),
-     n = array[index - 1] / array[index + 1];
+        n = array[index - 1] / array[index + 1];
 
       array.splice(index - 1, 3, n);
 
       return this.muldiv(array);
-
     } else if (array.includes('x')) {
       const index = array.indexOf('x'),
         n = array[index - 1] * array[index + 1];
 
       array.splice(index - 1, 3, n);
       return this.muldiv(array);
-
     } else if (array.includes('%')) {
       const index = array.indexOf('%'),
         n = array[index + 1]
@@ -148,7 +144,6 @@ export class UtilityService {
 
       array.splice(index - 1, array[index + 1] ? 3 : 2, n);
       return this.muldiv(array);
-
     }
 
     return array;
@@ -157,12 +152,12 @@ export class UtilityService {
   // method to calculate the result
   calculate(calArray: any) {
     let arrcal = [...calArray];
-
+    if (this.numbers.length > 0) arrcal.push(Number(this.numbers.join('')));
+    if (!arrcal[0]) return NaN;
     arrcal = this.muldiv(arrcal);
 
     let num = arrcal[0];
 
-    
     arrcal.forEach((numsign: any, i: number) => {
       if (typeof numsign === 'string') {
         switch (numsign) {
@@ -175,18 +170,34 @@ export class UtilityService {
         }
       }
     });
+
     num = Number(num.toFixed(4));
     return num;
   }
 
   // method that handles the point and '±' button operation
-  forNev(input: any, type: string): void {
-    if (type !== 'point')
+  forNev(input: any, type: string, result: any): void {
+    if (type !== 'point' && type !== 'back')
       if (this.numbers[1] && this.numbers[1].toString()[0] === '-') {
         this.numbers[1] = -this.numbers[1];
         this.numbers.shift();
       }
+    if (type === 'back') {
+      if (this.numbers.length > 0) this.numbers.pop();
+      else {
+        if (Number(this.calcArray[this.calcArray.length - 1])) {
+          this.numbers = this.calcArray[this.calcArray.length - 1]
+            .toString()
+            .split('')
+            .map((e: any) => Number(e));
+          this.numbers.pop();
+        }
 
+        this.calcArray.pop();
+      }
+    }
+
+    this.calcTotal = this.calculate(this.calcArray);
     input.innerHTML = '';
 
     this.calcArray.forEach((value: any) => {
@@ -203,6 +214,8 @@ export class UtilityService {
       span.setAttribute('class', 'number');
       input.appendChild(span);
     });
+
+    result.textContent = this.calcTotal ? this.calcTotal.toString() : '';
   }
 
   addcalexp(value: string, inputId: string, resutlId: string): boolean {
@@ -222,7 +235,6 @@ export class UtilityService {
     }
 
     if (enteredkey.type === 'cal') {
-      
       this.addnum();
 
       this.calcTotal = this.calculate(this.calcArray);
@@ -255,14 +267,19 @@ export class UtilityService {
     span.textContent = enteredkey.sign;
     span.setAttribute('class', enteredkey.type);
 
-    if (enteredkey.type === 'nev' || enteredkey.type === 'point') {
-      this.forNev(input, enteredkey.type);
+    if (
+      enteredkey.type === 'nev' ||
+      enteredkey.type === 'point' ||
+      enteredkey.type === 'back'
+    ) {
+      this.forNev(input, enteredkey.type, result);
       return false;
     }
 
     input.appendChild(span);
+    this.calcTotal = this.calculate(this.calcArray);
 
-    if (this.calcTotal) result.textContent = this.calcTotal.toString();
+    result.textContent = this.calcTotal ? this.calcTotal.toString() : '';
 
     this.calc = false;
     return false;
