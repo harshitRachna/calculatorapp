@@ -15,7 +15,8 @@ export class CalBodyComponent implements OnInit {
   // calculator buttons in order
   buttons = [
     { sign: 'AC', type: 'A' },
-    { sign: '±', type: 'A' },
+    { sign: '-1', html: 'fa-backspace', disabled: false },
+
     { sign: '%', type: 'A' },
     { sign: '÷', type: 'B' },
     { sign: '7' },
@@ -30,7 +31,7 @@ export class CalBodyComponent implements OnInit {
     { sign: '2' },
     { sign: '3' },
     { sign: '+', type: 'B' },
-    { sign: '-1', html: 'fa-backspace' ,disabled:false },
+    { sign: '±', type: 'A' },
     { sign: '0' },
     { sign: '.' },
     { sign: '=', type: 'B' },
