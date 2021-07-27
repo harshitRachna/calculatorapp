@@ -70,11 +70,8 @@ export class UtilityService {
     if (this.numbers.length === 0) return;
 
     let num = this.numbers.join(''),
-      number = Number(num),
-      check = number.toString();
-    if (check[0] === '0') check = check.replace(check[0], '');
-    if (num[0] === '0') num = num.replace('0', '');
-    if (check == num) this.calcArray.push(number);
+      number = Number(num);
+    this.calcArray.push(number);
   }
   // perform the required operation
   operationsOnSign(enteredkey: sign): sign {
@@ -252,8 +249,15 @@ export class UtilityService {
 
       this.numbers = [this.calcTotal];
       this.calcArray = [];
-      input.innerHTML = this.calcTotal.toString();
-      result.textContent = '';
+      input.innerHTML =
+        this.calcTotal.toString().length > 12
+          ? this.calcTotal.toString().slice(0, 12)
+          : this.calcTotal.toString();
+      result.innerHTML =
+        this.calcTotal.toString().length > 12
+          ? this.calcTotal.toString().slice(12)
+          : '';
+
       this.calc = true;
       return true;
     }
