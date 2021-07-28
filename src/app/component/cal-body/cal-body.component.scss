@@ -109,7 +109,7 @@
 }
 
 button.sign-typeA,
-button.sign-typeB {
+button.sign-typeB, button.sign-typeC {
 
   font-weight: 600 !important;
 }
@@ -124,4 +124,8 @@ button.sign-typeB {
   color: #bd4d51 !important;
 
 
+}
+
+button.sign-typeC{
+  color: rgb(204, 99, 0);
 }

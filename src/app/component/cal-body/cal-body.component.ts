@@ -1,6 +1,5 @@
-import { HtmlParser } from '@angular/compiler';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { Component, OnInit } from '@angular/core';
+
 import { TogglemodeService } from 'src/app/service/togglemode.service';
 import { UtilityService } from 'src/app/service/utility.service';
 
@@ -13,9 +12,14 @@ export class CalBodyComponent implements OnInit {
   showstatus: boolean = false;
   constructor(public toggle: TogglemodeService, private us: UtilityService) {}
   // calculator buttons in order
+
   buttons = [
+    { sign: '(', type: 'C' },
+    { sign: ')', type: 'C' },
     { sign: 'AC', type: 'A' },
     { sign: '-1', html: 'fa-backspace', disabled: false },
+    { sign: '𝛑', type: 'C' },
+    { sign: 'x²', type: 'C' },
 
     { sign: '%', type: 'A' },
     { sign: '÷', type: 'B' },
@@ -35,6 +39,7 @@ export class CalBodyComponent implements OnInit {
     { sign: '0' },
     { sign: '.' },
     { sign: '=', type: 'B' },
+  
   ];
   ngOnInit(): void {
     window?.addEventListener('keyup', (e) => {

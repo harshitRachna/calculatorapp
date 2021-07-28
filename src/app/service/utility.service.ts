@@ -50,7 +50,16 @@ export class UtilityService {
       case '.':
         obj = { type: 'point', sign: keypressed };
         break;
-
+      case '(':
+      case ')':
+        obj = { type: 'bracket', sign: keypressed };
+        break;
+      case 'x²':
+        obj = { type: 'sq2', sign: keypressed };
+        break;
+      case '𝛑':
+        obj = { type: 'pi', sign: keypressed };
+        break;
       case '=':
       case 'Enter':
         obj = { type: 'cal', sign: '=' };
@@ -78,6 +87,13 @@ export class UtilityService {
     if (enteredkey.type === 'back') {
       return enteredkey;
     }
+    if (enteredkey.type === 'sq2') {
+      const num = Number(this.numbers.join(''));
+      this.numbers =
+        this.numbers.length > 0 && this.numbers[0] !== '-'
+          ? [num * num]
+          : this.numbers;
+    }
 
     // check if user not clicked '=' or Enter button
     if (enteredkey.type !== 'cal') {
@@ -89,6 +105,7 @@ export class UtilityService {
           this.numbers.push(number);
         }
       }
+
       // check if user entered number
       if (enteredkey.type === 'number') {
         this.numbers.push(Number(enteredkey.sign));
@@ -100,14 +117,24 @@ export class UtilityService {
         else this.numbers.unshift(enteredkey.sign);
       }
       // check if user entered any mathematical operator
-      if (enteredkey.type === 'sign') {
+      if (
+        enteredkey.type === 'sign' ||
+        enteredkey.type === 'bracket' ||
+        enteredkey.type === 'pi'
+      ) {
         // method call to push the entered numbers in calArray.
         this.addnum();
 
         // check if the last value of the calArray is mathematical operator or if the array is empty
         if (
-          this.identifySign(this.calcArray[this.calcArray.length - 1]).type ===
-            'sign' ||
+          (this.identifySign(this.calcArray[this.calcArray.length - 1]).type ===
+            'sign' &&
+            enteredkey.type !== 'bracket' &&
+            enteredkey.sign !== '𝛑') ||
+          (this.identifySign(this.calcArray[this.calcArray.length - 1]).type ===
+            'bracket' &&
+            enteredkey.type === 'sign' &&
+            this.calcArray[this.calcArray.length - 1] === '(') ||
           !this.calcArray[0]
         )
           return { type: '', sign: '' };
@@ -122,6 +149,53 @@ export class UtilityService {
 
   //method that accepts that array and solve the '*','÷' & '%'
   muldiv(array: any): any {
+    console.log(array);
+
+    if (array.includes('𝛑')) {
+      const index = array.indexOf('𝛑');
+
+      array.splice(index, 1, '(', 3.14, ')');
+
+      return this.muldiv(array);
+    }
+
+    if (array.includes('(')) {
+      let start = array.lastIndexOf('('),
+        end =
+          array.slice(0, start).length +
+          (array.slice(start).indexOf(')') === -1
+            ? array.slice(start).length - 1
+            : array.slice(start).indexOf(')'));
+
+      if (!array[start + 1]) {
+        array.splice(start, 1);
+        return this.muldiv(array);
+      }
+
+      const bnum = this.calculate(
+        array.slice(start + 1, array[end] === ')' ? end : end + 1)
+      );
+      const noof = end - start + 1 <= 0 ? 1 : end - start + 1;
+
+      if (Number(array[start - 1])) {
+        array.splice(start, noof, 'x', bnum);
+
+        return this.muldiv(array);
+      } else if (Number(array[end + 1]) && array[start + 1] !== array[end]) {
+        array.splice(start, noof, bnum, 'x');
+
+        return this.muldiv(array);
+      } else {
+        // debugger;
+        array.splice(start, noof, bnum);
+
+        return this.muldiv(array);
+      }
+    }
+
+    if (array.includes(')')) {
+      return [NaN];
+    }
     if (array.includes('÷')) {
       const index = array.indexOf('÷'),
         n = array[index - 1] / array[index + 1];
@@ -129,13 +203,15 @@ export class UtilityService {
       array.splice(index - 1, 3, n);
 
       return this.muldiv(array);
-    } else if (array.includes('x')) {
+    }
+    if (array.includes('x')) {
       const index = array.indexOf('x'),
         n = array[index - 1] * array[index + 1];
 
       array.splice(index - 1, 3, n);
       return this.muldiv(array);
-    } else if (array.includes('%')) {
+    }
+    if (array.includes('%')) {
       const index = array.indexOf('%'),
         n = array[index + 1]
           ? (array[index - 1] / 100) * array[index + 1]
@@ -170,7 +246,7 @@ export class UtilityService {
       }
     });
 
-    num = Number(num.toFixed(4));
+    num = num ? Number(num.toFixed(4)) : num;
     return num;
   }
 
@@ -193,7 +269,7 @@ export class UtilityService {
           this.numbers = this.calcArray[this.calcArray.length - 1]
             .toString()
             .split('')
-            .map((e: any) => Number(e));
+            .map((e: any) => (e === '- ' || e === '.' ? e : Number(e)));
           this.numbers.pop();
         }
 
@@ -245,7 +321,6 @@ export class UtilityService {
     if (enteredkey.type === 'cal') {
       this.addnum();
 
-      this.calcTotal = this.calculate(this.calcArray);
       if (
         (this.identifySign(this.calcArray[this.calcArray.length - 1]).type ===
           'sign' &&
@@ -261,7 +336,9 @@ export class UtilityService {
       input.innerHTML =
         this.calcTotal.toString().length > 12
           ? this.calcTotal.toString().slice(0, 12)
-          : this.calcTotal.toString();
+          : this.calcTotal
+          ? this.calcTotal.toString()
+          : 'Expression Error';
       result.innerHTML =
         this.calcTotal.toString().length > 12
           ? this.calcTotal.toString().slice(12)
@@ -283,6 +360,7 @@ export class UtilityService {
     span.setAttribute('class', enteredkey.type);
 
     this.forNev(input, enteredkey.type, result);
+    this.calc = false;
     return false;
   }
 }
