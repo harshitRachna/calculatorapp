@@ -48,7 +48,7 @@ export class UtilityService {
         obj = { type: 'number', sign: keypressed };
         break;
       case '.':
-        obj = { type: 'point', sign: keypressed };
+        obj = { type: 'point', sign: '.' };
         break;
       case '(':
       case ')':
@@ -227,7 +227,12 @@ export class UtilityService {
   // method to calculate the result
   calculate(calArray: any) {
     let arrcal = [...calArray];
-    if (this.numbers.length > 0) arrcal.push(Number(this.numbers.join('')));
+   
+
+    if (this.numbers.length > 0)
+      arrcal.push(
+        this.numbers.join('') === '.' ? 0 : Number(this.numbers.join(''))
+      );
     if (!arrcal[0]) return NaN;
     arrcal = this.muldiv(arrcal);
 
@@ -295,7 +300,7 @@ export class UtilityService {
       input.appendChild(span);
     });
 
-    result.textContent = this.calcTotal ? this.calcTotal.toString() : '';
+    result.textContent = this.calcTotal === 0 || this.calcTotal  ? this.calcTotal.toString() : '';
   }
 
   addcalexp(value: string, inputId: string, resutlId: string): boolean {
