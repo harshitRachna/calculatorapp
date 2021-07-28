@@ -176,11 +176,16 @@ export class UtilityService {
 
   // method that handles the point and '±' button operation
   forNev(input: any, type: string, result: any): void {
-    if (type !== 'point' && type !== 'back')
+    if (type === 'nev') {
       if (this.numbers[1] && this.numbers[1].toString()[0] === '-') {
         this.numbers[1] = -this.numbers[1];
         this.numbers.shift();
       }
+
+      if (this.numbers.length === 1 && this.numbers[0] === '-')
+        this.numbers.pop();
+    }
+
     if (type === 'back') {
       if (this.numbers.length > 0) this.numbers.pop();
       else {
@@ -218,6 +223,10 @@ export class UtilityService {
   }
 
   addcalexp(value: string, inputId: string, resutlId: string): boolean {
+    if (this.numbers.length === 1 && Number(this.numbers[0]) === 0) {
+      this.numbers.pop();
+    }
+
     const span = document.createElement('span'),
       enteredkey = this.operationsOnSign(this.identifySign(value)),
       input = document.getElementById(inputId) as HTMLElement,
@@ -273,21 +282,7 @@ export class UtilityService {
     span.textContent = enteredkey.sign;
     span.setAttribute('class', enteredkey.type);
 
-    if (
-      enteredkey.type === 'nev' ||
-      enteredkey.type === 'point' ||
-      enteredkey.type === 'back'
-    ) {
-      this.forNev(input, enteredkey.type, result);
-      return false;
-    }
-
-    input.appendChild(span);
-    this.calcTotal = this.calculate(this.calcArray);
-
-    result.textContent = this.calcTotal ? this.calcTotal.toString() : '';
-
-    this.calc = false;
+    this.forNev(input, enteredkey.type, result);
     return false;
   }
 }
