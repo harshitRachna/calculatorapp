@@ -46,11 +46,38 @@
 
   }
 
+
+
   .toggel-btn.dark {
     background: #333;
   }
 
   .toggel-btn.light {
     background: #f5f5f5;
+  }
+}
+
+.sci-btn {
+  top: 27%;
+  left: 10px;
+  justify-content: flex-start;
+
+  .toggel-btn {
+    background: rgb(177, 140, 212) !important;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 35px;
+    border-radius: 15px;
+
+    a {
+      color: #666;
+    }
+
+    a.sci {
+      color: #FFF
+    }
+
+
   }
 }

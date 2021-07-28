@@ -12,7 +12,71 @@ export class CalBodyComponent implements OnInit {
   showstatus: boolean = false;
   constructor(public toggle: TogglemodeService, private us: UtilityService) {}
   // calculator buttons in order
-
+  scbutton = [
+    {
+      sign: '^',
+      type: 'A',
+      html: '',
+      disabled: false,
+    },
+    {
+      sign: 'x!',
+      type: 'A',
+    }, {
+      sign: 'log',
+      type:'A'
+    }, {
+      sign: 'tan',
+      type:'B'
+    },
+    {
+      sign: 'e',
+      type:''
+    },
+    {
+      sign: 'sin',
+      type: 'B'
+    },
+    {
+      sign: 'cos',
+      type:'B'
+    },
+    {
+      sign: 'Inv',
+      type:''
+    },
+    {
+      sign: 'Inv',
+      type:''
+    },
+    {
+      sign: 'Inv',
+      type:''
+    },
+    {
+      sign: 'Inv',
+      type:''
+    },
+    {
+      sign: 'Inv',
+      type:''
+    },
+    {
+      sign: 'Inv',
+      type:''
+    },
+    {
+      sign: 'Inv',
+      type:''
+    },
+    {
+      sign: 'Inv',
+      type:''
+    },
+    {
+      sign:'√'
+    }
+  ];
   buttons = [
     { sign: '(', type: 'C' },
     { sign: ')', type: 'C' },
@@ -39,7 +103,6 @@ export class CalBodyComponent implements OnInit {
     { sign: '0' },
     { sign: '.' },
     { sign: '=', type: 'B' },
-  
   ];
   ngOnInit(): void {
     window?.addEventListener('keyup', (e) => {
