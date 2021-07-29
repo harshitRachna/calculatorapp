@@ -79,7 +79,7 @@ export class UtilityService {
     if (this.numbers.length === 0) return;
 
     let num = this.numbers.join(''),
-      number = Number(num);
+      number = num === '.' ? 0 : Number(num);
     this.calcArray.push(number);
   }
   // perform the required operation
@@ -145,6 +145,8 @@ export class UtilityService {
 
   //method that accepts that array and solve the '*','÷' & '%'
   muldiv(array: any): any {
+    console.log(array);
+
     if (array.includes('𝛑')) {
       const index = array.indexOf('𝛑'),
         pi = 22 / 7;
@@ -277,13 +279,7 @@ export class UtilityService {
     if (type === 'back') {
       if (this.numbers.length > 0) this.numbers.pop();
       else {
-        if (
-          this.identifySign(this.calcArray[this.calcArray.length - 1]).type ===
-          'sign'
-        ) {
-          this.calcArray.pop();
-          this.backspace();
-        } else if (Number(this.calcArray[this.calcArray.length - 1])) {
+        if (Number(this.calcArray[this.calcArray.length - 1])) {
           this.backspace();
           this.numbers.pop();
         }
