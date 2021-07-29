@@ -168,7 +168,7 @@ export class UtilityService {
       const index = array.indexOf('!'),
         num = array[index - 1];
       let fact = 1;
-      for (let i = num; i > 0; i++) fact *= i;
+      for (let i = num; i > 0; i--) fact *= i;
       if (Number(array[index + 1])) array.splice(index - 1, 2, fact, 'x');
       else array.splice(index - 1, 2, fact);
 
