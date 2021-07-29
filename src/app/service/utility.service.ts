@@ -190,7 +190,9 @@ export class UtilityService {
       const noof = end - start + 1 <= 0 ? 1 : end - start + 1;
 
       if (Number(array[start - 1])) {
-        array.splice(start, noof, 'x', bnum);
+        if (Number(array[end + 1]) && array.length > end)
+          array.splice(start, noof, 'x', bnum, 'x');
+        else array.splice(start, noof, 'x', bnum);
 
         return this.muldiv(array);
       } else if (Number(array[end + 1]) && array[start + 1] !== array[end]) {
