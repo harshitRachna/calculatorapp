@@ -89,10 +89,22 @@ export class UtilityService {
     }
     if (enteredkey.type === 'sq2') {
       const num = Number(this.numbers.join(''));
-      this.numbers =
-        this.numbers.length > 0 && this.numbers[0] !== '-'
-          ? [num * num]
-          : this.numbers;
+
+      if (
+        (this.numbers.length > 0 && this.numbers[0] !== '-') ||
+        (this.numbers[0] === '-' && this.numbers.length > 1)
+      ) {
+        if (this.numbers.length === 1 && this.numbers[0] === '.')
+          this.numbers = [0];
+        else {
+          this.numbers = (num * num)
+            .toString()
+            .split('')
+            .map((e) => (e === '.' || e === '-' ? e : Number(e)));
+        }
+
+        return { type: 'cal', sign: '=' };
+      }
     }
 
     // check if user not clicked '=' or Enter button
@@ -227,7 +239,6 @@ export class UtilityService {
   // method to calculate the result
   calculate(calArray: any) {
     let arrcal = [...calArray];
-   
 
     if (this.numbers.length > 0)
       arrcal.push(
@@ -300,7 +311,8 @@ export class UtilityService {
       input.appendChild(span);
     });
 
-    result.textContent = this.calcTotal === 0 || this.calcTotal  ? this.calcTotal.toString() : '';
+    result.textContent =
+      this.calcTotal === 0 || this.calcTotal ? this.calcTotal.toString() : '';
   }
 
   addcalexp(value: string, inputId: string, resutlId: string): boolean {
