@@ -57,6 +57,9 @@ export class UtilityService {
       case 'x²':
         obj = { type: 'sq2', sign: keypressed };
         break;
+      case 'x!':
+        obj = { type: 'fact', sign: '!' };
+        break;
       case '𝛑':
         obj = { type: 'pi', sign: keypressed };
         break;
@@ -112,6 +115,20 @@ export class UtilityService {
         if (this.numbers[0] === '-') this.numbers.shift();
         else this.numbers.unshift(enteredkey.sign);
       }
+      if (enteredkey.type === 'fact') {
+        this.addnum();
+        if (
+          this.identifySign(this.calcArray[this.calcArray.length - 1]).type ===
+            'sign' ||
+          !this.calcArray[0]
+        ) {
+          return { type: '', sign: '' };
+        }
+
+        // push the mathematical operator in calcArray
+        this.calcArray.push(enteredkey.sign);
+        this.numbers = [];
+      }
       // check if user entered any mathematical operator
       if (
         enteredkey.type === 'sign' ||
@@ -147,6 +164,16 @@ export class UtilityService {
   muldiv(array: any): any {
     console.log(array);
 
+    if (array.includes('!')) {
+      const index = array.indexOf('!'),
+        num = array[index - 1];
+      let fact = 1;
+      for (let i = num; i > 0; i++) fact *= i;
+      if (Number(array[index + 1])) array.splice(index - 1, 2, fact, 'x');
+      else array.splice(index - 1, 2, fact);
+
+      return this.muldiv(array);
+    }
     if (array.includes('𝛑')) {
       const index = array.indexOf('𝛑'),
         pi = 22 / 7;
