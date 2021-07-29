@@ -13,77 +13,51 @@ export class CalBodyComponent implements OnInit {
   constructor(public toggle: TogglemodeService, private us: UtilityService) {}
   // calculator buttons in order
   scbutton = [
+    { sign: '(', type: 'C' },
     {
-      sign: '^',
-      type: 'A',
+      sign: ')',
+      type: 'C',
       html: '',
       disabled: false,
     },
     {
       sign: 'x!',
       type: 'A',
-    }, {
-      sign: 'log',
-      type:'A'
-    }, {
-      sign: 'tan',
-      type:'B'
     },
-    {
-      sign: 'e',
-      type:''
-    },
+    { sign: 'Inv' },
     {
       sign: 'sin',
-      type: 'B'
+      type: 'B',
     },
+    { sign: 'In' },
+    { sign: '𝛑', type: 'C' },
     {
       sign: 'cos',
-      type:'B'
+      type: 'B',
     },
     {
-      sign: 'Inv',
-      type:''
+      sign: 'log',
+      type: 'A',
+    },
+    { sign: 'e' },
+    {
+      sign: 'tan',
+      type: 'B',
     },
     {
-      sign: 'Inv',
-      type:''
+      sign: '√',
     },
-    {
-      sign: 'Inv',
-      type:''
-    },
-    {
-      sign: 'Inv',
-      type:''
-    },
-    {
-      sign: 'Inv',
-      type:''
-    },
-    {
-      sign: 'Inv',
-      type:''
-    },
-    {
-      sign: 'Inv',
-      type:''
-    },
-    {
-      sign: 'Inv',
-      type:''
-    },
-    {
-      sign:'√'
-    }
+
+
+    { sign: 'x²', type: 'C' },
+    { sign: 'Ans' },
+    { sign: 'EXP' },
+  {sign:'x'}
+   
   ];
   buttons = [
-    { sign: '(', type: 'C' },
-    { sign: ')', type: 'C' },
     { sign: 'AC', type: 'A' },
     { sign: '-1', html: 'CE', disabled: false },
-    { sign: '𝛑', type: 'C' },
-    { sign: 'x²', type: 'C' },
 
     { sign: '%', type: 'A' },
     { sign: '÷', type: 'B' },

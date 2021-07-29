@@ -75,6 +75,11 @@
     }
   }
 
+  .claculator-keys.sci-mode {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
 }
 
 .calculator.dark {
@@ -130,5 +135,3 @@ button.sign-typeB {
 button.sign-typeC {
   color: rgb(204, 99, 0);
 }
-
-

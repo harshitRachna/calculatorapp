@@ -14,7 +14,7 @@
             (click)="calcexp(btn.sign)" [value]="btn.sign"> {{btn.html? btn.html
             :btn.sign}}</button>
     </div>
-    <div class="claculator-keys" *ngIf="toggle.scMode">
+    <div class="claculator-keys sci-mode" *ngIf="toggle.scMode">
         <button class="sign-type{{btn.type}}" [disabled]='btn.disabled' *ngFor='let btn of scbutton'
             (click)="calcexp(btn.sign)" [value]="btn.sign"> {{btn.html?btn.html
             :btn.sign}}</button>

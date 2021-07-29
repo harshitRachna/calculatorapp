@@ -162,18 +162,6 @@ export class UtilityService {
 
   //method that accepts that array and solve the '*','÷' & '%'
   muldiv(array: any): any {
-    console.log(array);
-
-    if (array.includes('!')) {
-      const index = array.indexOf('!'),
-        num = array[index - 1];
-      let fact = 1;
-      for (let i = num; i > 0; i--) fact *= i;
-      if (Number(array[index + 1])) array.splice(index - 1, 2, fact, 'x');
-      else array.splice(index - 1, 2, fact);
-
-      return this.muldiv(array);
-    }
     if (array.includes('𝛑')) {
       const index = array.indexOf('𝛑'),
         pi = 22 / 7;
@@ -225,6 +213,17 @@ export class UtilityService {
 
     if (array.includes(')')) {
       return [NaN];
+    }
+    if (array.includes('!')) {
+      const index = array.indexOf('!'),
+        num = array[index - 1] < 0 ? array[index - 1] * -1 : array[index - 1];
+      let fact = array[index - 1] < 0 ? -1 : 1;
+      for (let i = num; i > 0; i--) fact *= i;
+
+      if (Number(array[index + 1])) array.splice(index - 1, 2, fact, 'x');
+      else array.splice(index - 1, 2, fact);
+
+      return this.muldiv(array);
     }
     if (array.includes('÷')) {
       const index = array.indexOf('÷'),
@@ -285,10 +284,11 @@ export class UtilityService {
   }
 
   backspace() {
-    this.numbers = this.calcArray[this.calcArray.length - 1]
+    this.numbers = this.calcArray[this.calcArray.length - 2]
       .toString()
       .split('')
-      .map((e: any) => (e === '- ' || e === '.' ? e : Number(e)));
+      .map((e: any) => (e === '-' || e === '.' ? e : Number(e)));
+    this.calcArray.splice(this.calcArray.length - 2, 1);
   }
 
   // method that handles the point and '±' button operation
@@ -304,11 +304,11 @@ export class UtilityService {
     }
 
     if (type === 'back') {
-      if (this.numbers.length > 0) this.numbers.pop();
-      else {
-        if (Number(this.calcArray[this.calcArray.length - 1])) {
+      if (this.numbers.length > 0) {
+        this.numbers.pop();
+      } else {
+        if (Number(this.calcArray[this.calcArray.length - 2])) {
           this.backspace();
-          this.numbers.pop();
         }
         this.calcArray.pop();
       }
