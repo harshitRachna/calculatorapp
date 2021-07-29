@@ -164,9 +164,10 @@ export class UtilityService {
     console.log(array);
 
     if (array.includes('𝛑')) {
-      const index = array.indexOf('𝛑');
+      const index = array.indexOf('𝛑'),
+        pi = 22 / 7;
 
-      array.splice(index, 1, '(', 3.14, ')');
+      array.splice(index, 1, '(', pi, ')');
 
       return this.muldiv(array);
     }
@@ -268,6 +269,13 @@ export class UtilityService {
     return num;
   }
 
+  backspace() {
+    this.numbers = this.calcArray[this.calcArray.length - 1]
+      .toString()
+      .split('')
+      .map((e: any) => (e === '- ' || e === '.' ? e : Number(e)));
+  }
+
   // method that handles the point and '±' button operation
   forNev(input: any, type: string, result: any): void {
     if (type === 'nev') {
@@ -283,14 +291,16 @@ export class UtilityService {
     if (type === 'back') {
       if (this.numbers.length > 0) this.numbers.pop();
       else {
-        if (Number(this.calcArray[this.calcArray.length - 1])) {
-          this.numbers = this.calcArray[this.calcArray.length - 1]
-            .toString()
-            .split('')
-            .map((e: any) => (e === '- ' || e === '.' ? e : Number(e)));
+        if (
+          this.identifySign(this.calcArray[this.calcArray.length - 1]).type ===
+          'sign'
+        ) {
+          this.calcArray.pop();
+          this.backspace();
+        } else if (Number(this.calcArray[this.calcArray.length - 1])) {
+          this.backspace();
           this.numbers.pop();
         }
-
         this.calcArray.pop();
       }
     }
