@@ -88,23 +88,7 @@ export class UtilityService {
       return enteredkey;
     }
     if (enteredkey.type === 'sq2') {
-      const num = Number(this.numbers.join(''));
-
-      if (
-        (this.numbers.length > 0 && this.numbers[0] !== '-') ||
-        (this.numbers[0] === '-' && this.numbers.length > 1)
-      ) {
-        if (this.numbers.length === 1 && this.numbers[0] === '.')
-          this.numbers = [0];
-        else {
-          this.numbers = (num * num)
-            .toString()
-            .split('')
-            .map((e) => (e === '.' || e === '-' ? e : Number(e)));
-        }
-
-        return { type: 'cal', sign: '=' };
-      }
+      this.calcArray.push('sqr(');
     }
 
     // check if user not clicked '=' or Enter button
@@ -147,7 +131,7 @@ export class UtilityService {
             'bracket' &&
             enteredkey.type === 'sign' &&
             this.calcArray[this.calcArray.length - 1] === '(') ||
-          !this.calcArray[0]
+          (!this.calcArray[0] && enteredkey.type === 'sign')
         )
           return { type: '', sign: '' };
 
@@ -161,8 +145,6 @@ export class UtilityService {
 
   //method that accepts that array and solve the '*','÷' & '%'
   muldiv(array: any): any {
-    console.log(array);
-
     if (array.includes('𝛑')) {
       const index = array.indexOf('𝛑'),
         pi = 22 / 7;
@@ -172,8 +154,10 @@ export class UtilityService {
       return this.muldiv(array);
     }
 
-    if (array.includes('(')) {
-      let start = array.lastIndexOf('('),
+    if (array.includes('(') || array.includes('sqr(')) {
+      let start = array.includes('(')
+          ? array.lastIndexOf('(')
+          : array.lastIndexOf('sqr('),
         end =
           array.slice(0, start).length +
           (array.slice(start).indexOf(')') === -1
@@ -185,9 +169,11 @@ export class UtilityService {
         return this.muldiv(array);
       }
 
-      const bnum = this.calculate(
-        array.slice(start + 1, array[end] === ')' ? end : end + 1)
-      );
+      let numw = this.calculate(
+          array.slice(start + 1, array[end] === ')' ? end : end + 1)
+        ),
+        bnum = array.includes('(') ? numw : numw * numw;
+
       const noof = end - start + 1 <= 0 ? 1 : end - start + 1;
 
       if (Number(array[start - 1])) {
