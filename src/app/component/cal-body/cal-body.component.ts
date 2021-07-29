@@ -81,7 +81,7 @@ export class CalBodyComponent implements OnInit {
     { sign: '(', type: 'C' },
     { sign: ')', type: 'C' },
     { sign: 'AC', type: 'A' },
-    { sign: '-1', html: 'fa-backspace', disabled: false },
+    { sign: '-1', html: 'CE', disabled: false },
     { sign: '𝛑', type: 'C' },
     { sign: 'x²', type: 'C' },
 

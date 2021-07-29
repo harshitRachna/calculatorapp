@@ -11,12 +11,12 @@
     </div>
     <div class="claculator-keys" *ngIf="!toggle.scMode">
         <button class="sign-type{{btn.type}}" [disabled]='btn.disabled' *ngFor='let btn of buttons'
-            (click)="calcexp(btn.sign)" [value]="btn.sign"> <i class="fas {{btn.html}}"></i>{{btn.html? ''
+            (click)="calcexp(btn.sign)" [value]="btn.sign"> {{btn.html? btn.html
             :btn.sign}}</button>
     </div>
     <div class="claculator-keys" *ngIf="toggle.scMode">
         <button class="sign-type{{btn.type}}" [disabled]='btn.disabled' *ngFor='let btn of scbutton'
-            (click)="calcexp(btn.sign)" [value]="btn.sign"> <i class="fas {{btn.html}}"></i>{{btn.html? ''
+            (click)="calcexp(btn.sign)" [value]="btn.sign"> {{btn.html?btn.html
             :btn.sign}}</button>
     </div>
 </div>
