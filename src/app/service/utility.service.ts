@@ -19,6 +19,8 @@ export class UtilityService {
 
   calc = false;
 
+  ans: number = 0;
+
   // method to identify the entered input is a sign or number
   identifySign(keypressed: string): sign {
     let obj: any = {};
@@ -27,6 +29,10 @@ export class UtilityService {
       case '+':
       case '-':
       case '%':
+      case 'EXP':
+        obj = { type: 'sign', sign: 'E' };
+        break;
+      case 'Ans':
         obj = { type: 'sign', sign: keypressed };
         break;
       case '±':
@@ -84,6 +90,7 @@ export class UtilityService {
     let num = this.numbers.join(''),
       number = num === '.' ? 0 : Number(num);
     this.calcArray.push(number);
+    this.numbers = [];
   }
   // perform the required operation
   operationsOnSign(enteredkey: sign): sign {
@@ -138,19 +145,12 @@ export class UtilityService {
         // method call to push the entered numbers in calArray.
         this.addnum();
 
+        const array =
+          enteredkey.sign === 'E'
+            ? this.calculate([...this.calcArray, enteredkey.sign])
+            : this.calculate([...this.calcArray]);
         // check if the last value of the calArray is mathematical operator or if the array is empty
-        if (
-          (this.identifySign(this.calcArray[this.calcArray.length - 1]).type ===
-            'sign' &&
-            enteredkey.type !== 'bracket' &&
-            enteredkey.sign !== '𝛑') ||
-          (this.identifySign(this.calcArray[this.calcArray.length - 1]).type ===
-            'bracket' &&
-            enteredkey.type === 'sign' &&
-            this.calcArray[this.calcArray.length - 1] === '(') ||
-          (!this.calcArray[0] && enteredkey.type === 'sign')
-        )
-          return { type: '', sign: '' };
+        if (array !== 0 ? !array : false) return { type: '', sign: '' };
 
         // push the mathematical operator in calcArray
         this.calcArray.push(enteredkey.sign);
@@ -162,6 +162,16 @@ export class UtilityService {
 
   //method that accepts that array and solve the '*','÷' & '%'
   muldiv(array: any): any {
+    if (array.includes(NaN)) return [NaN];
+    if (array.includes('Ans')) {
+      const index = array.indexOf('Ans');
+      if (Number(array[index - 1]) && Number(array[index + 1]))
+        array.splice(index, 1, 'x', this.ans, 'x');
+      else if (Number(array[index - 1])) array.splice(index, 1, 'x', this.ans);
+      else if (Number(array[index + 1])) array.splice(index, 1, this.ans, 'x');
+
+      return this.muldiv(array);
+    }
     if (array.includes('𝛑')) {
       const index = array.indexOf('𝛑'),
         pi = 22 / 7;
@@ -214,6 +224,25 @@ export class UtilityService {
     if (array.includes(')')) {
       return [NaN];
     }
+    if (array.includes('E')) {
+      const index = array.indexOf('E'),
+        n =
+          array[index - 1] *
+          Math.pow(10, Number(array[index + 1]) ? Number(array[index + 1]) : 0);
+
+      array.splice(index - 1, Number(array[index + 1]) ? 3 : 2, n);
+      return this.muldiv(array);
+    }
+    if (array.includes('%')) {
+      const index = array.indexOf('%'),
+        n = Number(array[index + 1])
+          ? (array[index - 1] / 100) * array[index + 1]
+          : array[index - 1] / 100;
+
+      array.splice(index - 1, Number(array[index + 1]) ? 3 : 2, n);
+      return this.muldiv(array);
+    }
+
     if (array.includes('!')) {
       const index = array.indexOf('!'),
         num = array[index - 1] < 0 ? array[index - 1] * -1 : array[index - 1];
@@ -225,6 +254,7 @@ export class UtilityService {
 
       return this.muldiv(array);
     }
+
     if (array.includes('÷')) {
       const index = array.indexOf('÷'),
         n = array[index - 1] / array[index + 1];
@@ -238,15 +268,6 @@ export class UtilityService {
         n = array[index - 1] * array[index + 1];
 
       array.splice(index - 1, 3, n);
-      return this.muldiv(array);
-    }
-    if (array.includes('%')) {
-      const index = array.indexOf('%'),
-        n = array[index + 1]
-          ? (array[index - 1] / 100) * array[index + 1]
-          : array[index - 1] / 100;
-
-      array.splice(index - 1, array[index + 1] ? 3 : 2, n);
       return this.muldiv(array);
     }
 
@@ -319,7 +340,7 @@ export class UtilityService {
 
     this.calcArray.forEach((value: any) => {
       const span = document.createElement('span'),
-        signtype = this.identifySign(value);
+        signtype = this.identifySign(value === 'E' ? 'EXP' : value);
       span.textContent = value;
 
       span.setAttribute('class', signtype.type);
@@ -359,13 +380,7 @@ export class UtilityService {
     if (enteredkey.type === 'cal') {
       this.addnum();
 
-      if (
-        (this.identifySign(this.calcArray[this.calcArray.length - 1]).type ===
-          'sign' &&
-          this.calcArray[this.calcArray.length - 1] !== '%') ||
-        !this.calcArray[0]
-      )
-        return false;
+      if (!this.calculate(this.calcArray)) return false;
 
       this.calcTotal = this.calculate(this.calcArray);
 

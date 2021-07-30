@@ -10,14 +10,15 @@ import { UtilityService } from 'src/app/service/utility.service';
 })
 export class CalBodyComponent implements OnInit {
   showstatus: boolean = false;
+  invsci: boolean = false;
   constructor(public toggle: TogglemodeService, private us: UtilityService) {}
   // calculator buttons in order
-  scbutton = [
+  scbutton: any = [
     { sign: '(', type: 'C' },
     {
       sign: ')',
       type: 'C',
-      html: '',
+
       disabled: false,
     },
     {
@@ -25,9 +26,16 @@ export class CalBodyComponent implements OnInit {
       type: 'A',
     },
     { sign: 'Inv' },
+    // {
+    //   sign: 'sin',
+    //   sup: '-1',
+    //   type: 'B',
+    //   isVisible: true,
+    // },
     {
       sign: 'sin',
       type: 'B',
+      isVisible: false,
     },
     { sign: 'In' },
     { sign: '𝛑', type: 'C' },
@@ -48,12 +56,10 @@ export class CalBodyComponent implements OnInit {
       sign: '√',
     },
 
-
     { sign: 'x²', type: 'C' },
-    { sign: 'Ans' },
+    { sign: 'Ans', type: 'B' },
     { sign: 'EXP' },
-  {sign:'x'}
-   
+    { sign: 'x' },
   ];
   buttons = [
     { sign: 'AC', type: 'A' },
@@ -83,6 +89,7 @@ export class CalBodyComponent implements OnInit {
       this.calcexp(e.key);
     });
   }
+
   calcexp(clickbtn: any): void {
     switch (clickbtn) {
       case '×':
