@@ -186,7 +186,6 @@ export class UtilityService {
   //method that accepts that array and solve the '*','÷' & '%'
   muldiv(array: any): any {
     console.log(array);
-
     if (array.includes(NaN)) return [NaN];
     if (array.includes('Ans')) {
       const index = array.indexOf('Ans');
@@ -287,10 +286,9 @@ export class UtilityService {
         num = array[index - 1] < 0 ? array[index - 1] * -1 : array[index - 1];
 
       if (array[index - 1] % 1 !== 0) return this.muldiv([NaN]);
-
+      if (array[index - 1].toString().includes('e')) return [Infinity];
       let fact = array[index - 1] < 0 ? -1 : 1;
       for (let i = num; i > 0; i--) {
-        console.log(i);
         fact *= i;
       }
 
