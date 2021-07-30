@@ -185,7 +185,7 @@ export class UtilityService {
 
   //method that accepts that array and solve the '*','÷' & '%'
   muldiv(array: any): any {
-    console.log(array);
+   
     if (array.includes(NaN)) return [NaN];
     if (array.includes('Ans')) {
       const index = array.indexOf('Ans');
