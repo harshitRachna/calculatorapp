@@ -29,6 +29,8 @@ export class UtilityService {
       case '+':
       case '-':
       case '%':
+        obj = { type: 'sign', sign: keypressed };
+        break;
       case 'EXP':
         obj = { type: 'sign', sign: 'E' };
         break;
@@ -62,6 +64,11 @@ export class UtilityService {
         break;
       case 'x²':
         obj = { type: 'sq2', sign: keypressed };
+        break;
+      case 'sin':
+      case 'cos':
+      case 'tan':
+        obj = { type: 'sin', sign: keypressed };
         break;
       case 'x!':
         obj = { type: 'fact', sign: '!' };
@@ -100,7 +107,10 @@ export class UtilityService {
     if (enteredkey.type === 'sq2') {
       this.calcArray.push('sqr(');
     }
-
+    if (enteredkey.type === 'sin') {
+      this.addnum();
+      this.calcArray.push(enteredkey.sign + '(');
+    }
     // check if user not clicked '=' or Enter button
     if (enteredkey.type !== 'cal') {
       if (enteredkey.type === '') return { type: '', sign: '' };
@@ -122,31 +132,21 @@ export class UtilityService {
         if (this.numbers[0] === '-') this.numbers.shift();
         else this.numbers.unshift(enteredkey.sign);
       }
-      if (enteredkey.type === 'fact') {
-        this.addnum();
-        if (
-          this.identifySign(this.calcArray[this.calcArray.length - 1]).type ===
-            'sign' ||
-          !this.calcArray[0]
-        ) {
-          return { type: '', sign: '' };
-        }
 
-        // push the mathematical operator in calcArray
-        this.calcArray.push(enteredkey.sign);
-        this.numbers = [];
-      }
       // check if user entered any mathematical operator
       if (
         enteredkey.type === 'sign' ||
         enteredkey.type === 'bracket' ||
-        enteredkey.type === 'pi'
+        enteredkey.type === 'pi' ||
+        enteredkey.type === 'fact'
       ) {
         // method call to push the entered numbers in calArray.
         this.addnum();
 
         const array =
-          enteredkey.sign === 'E'
+          enteredkey.sign === '('
+            ? true
+            : enteredkey.sign === 'E' || enteredkey.type === 'fact'
             ? this.calculate([...this.calcArray, enteredkey.sign])
             : this.calculate([...this.calcArray]);
         // check if the last value of the calArray is mathematical operator or if the array is empty
@@ -160,8 +160,33 @@ export class UtilityService {
     return enteredkey;
   }
 
+  trigonometry(array: any, index: number, fun: any) {
+    const start = index,
+      end =
+        array.slice(0, start).length +
+        (array.slice(start).indexOf(')') === -1
+          ? array.slice(start).length - 1
+          : array.slice(start).indexOf(')'));
+
+    const num = this.calculate(
+        array.slice(start + 1, Number(array[end]) ? end + 1 : end)
+      ),
+      noof = end - start + 1 <= 0 ? 1 : end - start + 1,
+      snum = fun(num);
+
+    if (Number(array[start - 1]) && Number(array[end + 1]))
+      array.splice(start, noof, 'x', snum, 'x');
+    else if (Number(array[start - 1])) array.splice(start, noof, 'x', snum);
+    else if (Number(array[end + 1])) array.splice(start, noof, snum, 'x');
+    else array.splice(start, noof, snum);
+
+    return array;
+  }
+
   //method that accepts that array and solve the '*','÷' & '%'
   muldiv(array: any): any {
+    console.log(array);
+
     if (array.includes(NaN)) return [NaN];
     if (array.includes('Ans')) {
       const index = array.indexOf('Ans');
@@ -200,7 +225,6 @@ export class UtilityService {
           array.slice(start + 1, array[end] === ')' ? end : end + 1)
         ),
         bnum = array.includes('(') ? numw : numw * numw;
-
       const noof = end - start + 1 <= 0 ? 1 : end - start + 1;
 
       if (Number(array[start - 1])) {
@@ -220,9 +244,24 @@ export class UtilityService {
         return this.muldiv(array);
       }
     }
-
+    if (
+      array.includes('sin(') ||
+      array.includes('cos(') ||
+      array.includes('tan(')
+    ) {
+      const sIndex = array.lastIndexOf('sin('),
+        cIndex = array.lastIndexOf('cos('),
+        tIndex = array.lastIndexOf('tan(');
+      if (sIndex > cIndex && sIndex > tIndex) {
+        return this.muldiv(this.trigonometry(array, sIndex, Math.sin));
+      } else if (sIndex < cIndex && cIndex > tIndex) {
+        return this.muldiv(this.trigonometry(array, cIndex, Math.cos));
+      } else {
+        return this.muldiv(this.trigonometry(array, tIndex, Math.tan));
+      }
+    }
     if (array.includes(')')) {
-      return [NaN];
+      return this.muldiv([NaN]);
     }
     if (array.includes('E')) {
       const index = array.indexOf('E'),
@@ -246,8 +285,14 @@ export class UtilityService {
     if (array.includes('!')) {
       const index = array.indexOf('!'),
         num = array[index - 1] < 0 ? array[index - 1] * -1 : array[index - 1];
+
+      if (array[index - 1] % 1 !== 0) return this.muldiv([NaN]);
+
       let fact = array[index - 1] < 0 ? -1 : 1;
-      for (let i = num; i > 0; i--) fact *= i;
+      for (let i = num; i > 0; i--) {
+        console.log(i);
+        fact *= i;
+      }
 
       if (Number(array[index + 1])) array.splice(index - 1, 2, fact, 'x');
       else array.splice(index - 1, 2, fact);
@@ -396,7 +441,7 @@ export class UtilityService {
         this.calcTotal.toString().length > 12
           ? this.calcTotal.toString().slice(12)
           : '';
-
+      this.ans = this.calcTotal;
       this.calc = true;
       return true;
     }
