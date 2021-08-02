@@ -25,32 +25,51 @@ export class CalBodyComponent implements OnInit {
       sign: 'x!',
       type: 'A',
     },
-    { sign: 'Inv' },
-    // {
-    //   sign: 'sin',
-    //   sup: '-1',
-    //   type: 'B',
-    //   isVisible: true,
-    // },
+
     {
       sign: 'sin',
       type: 'B',
-      isVisible: false,
+      isVisible: true,
     },
-    { sign: 'In' },
+    {
+      sign: 'sin-1',
+
+      type: 'B',
+      isHide: true,
+    },
     { sign: '𝛑', type: 'C' },
     {
       sign: 'cos',
       type: 'B',
+      isVisible: true,
     },
+    {
+      sign: 'cos-1',
+
+      type: 'B',
+      isHide: true,
+    },
+    { sign: 'ln', type: 'A' },
     {
       sign: 'log',
       type: 'A',
     },
-    { sign: 'e' },
+    { sign: 'e', isVisible: true },
+    {
+      sign: '10ٰx',
+
+      isHide: true,
+    },
     {
       sign: 'tan',
       type: 'B',
+      isVisible: true,
+    },
+    {
+      sign: 'tan-1',
+
+      type: 'B',
+      isHide: true,
     },
     {
       sign: '√',
@@ -89,6 +108,7 @@ export class CalBodyComponent implements OnInit {
       this.calcexp(e.key);
     });
   }
+  redDeg(t: string) {}
 
   calcexp(clickbtn: any): void {
     switch (clickbtn) {

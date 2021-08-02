@@ -73,6 +73,10 @@
       transform: scale(.9);
       background: #edc;
     }
+
+    button.active {
+      background: #ffdada;
+    }
   }
 
   .claculator-keys.sci-mode {
@@ -96,6 +100,10 @@
 
       background: #131212;
       color: #fff;
+    }
+
+    button.active {
+      background: #5d4949f7;
     }
 
     button:active {
