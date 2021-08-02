@@ -54,12 +54,7 @@ export class CalBodyComponent implements OnInit {
       sign: 'log',
       type: 'A',
     },
-    { sign: 'e', isVisible: true },
-    {
-      sign: '10ٰx',
-
-      isHide: true,
-    },
+    { sign: 'e' },
     {
       sign: 'tan',
       type: 'B',
