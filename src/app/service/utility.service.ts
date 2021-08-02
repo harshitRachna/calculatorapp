@@ -35,7 +35,7 @@ export class UtilityService {
         obj = { type: 'sign', sign: 'E' };
         break;
       case '10ٰx':
-        obj = { type: 'sign', sign: '10ٰ' };
+        obj = { type: 'sign', sign: '10' };
         break;
       case 'Ans':
         obj = { type: 'sign', sign: keypressed };
@@ -157,6 +157,7 @@ export class UtilityService {
           enteredkey.sign === '('
             ? true
             : enteredkey.sign === 'E' ||
+              enteredkey.sign === '10' ||
               enteredkey.type === 'fact' ||
               enteredkey.type === 'pi'
             ? this.calculate([...this.calcArray, enteredkey.sign])
@@ -200,8 +201,6 @@ export class UtilityService {
 
   //method that accepts that array and solve the '*','÷' & '%'
   muldiv(array: any): any {
-    console.log(array);
-
     if (array.includes(NaN)) return [NaN];
     if (array.includes('Ans')) {
       this.ans = this.ans ? this.ans : 0;
@@ -325,13 +324,28 @@ export class UtilityService {
     if (array.includes(')')) {
       return this.muldiv([NaN]);
     }
-    if (array.includes('E')) {
-      const index = array.indexOf('E'),
-        n =
-          array[index - 1] *
-          Math.pow(10, Number(array[index + 1]) ? Number(array[index + 1]) : 0);
+    if (array.includes('E') || array.includes('10')) {
+      const index =
+          array.indexOf('E') === -1 ? array.indexOf('10') : array.indexOf('E'),
+        n = Number(array[index - 1])
+          ? Number(array[index - 1])
+          : 1 *
+            Math.pow(
+              10,
+              Number(array[index + 1]) ? Number(array[index + 1]) : 0
+            );
 
-      array.splice(index - 1, Number(array[index + 1]) ? 3 : 2, n);
+      array.splice(
+        Number(array[index - 1]) ? index - 1 : index,
+        Number(array[index - 1])
+          ? Number(array[index + 1])
+            ? 3
+            : 2
+          : Number(array[index + 1])
+          ? 2
+          : 1,
+        n
+      );
       return this.muldiv(array);
     }
     if (array.includes('%')) {
@@ -446,9 +460,13 @@ export class UtilityService {
 
     this.calcArray.forEach((value: any) => {
       const span = document.createElement('span'),
-        signtype = this.identifySign(value === 'E' ? 'EXP' : value);
+        signtype = this.identifySign(
+          value === 'E' ? 'EXP' : value === '10' ? '10ٰx' : value
+        );
       span.innerHTML = value.toString().includes('-1')
         ? `${value.slice(0, 3)}<sup>${value.slice(3, 5)}</sup>${value.slice(5)}`
+        : value.toString().includes('10')
+        ? `${value.slice(0, 2)}<sup>^</sup>`
         : value;
 
       span.setAttribute('class', signtype.type);
