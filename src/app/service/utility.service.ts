@@ -16,7 +16,7 @@ export class UtilityService {
   calcArray: any = [];
   // field to store calculater result
   calcTotal!: number;
-
+  isDeg: boolean = false;
   calc = false;
 
   ans: number = 0;
@@ -29,12 +29,22 @@ export class UtilityService {
       case '+':
       case '-':
       case '%':
+      case 'xⁿ':
         obj = { type: 'sign', sign: keypressed };
+        break;
+      case 'ⁿ√x':
+        obj = { type: 'sign', sign: 'ⁿ√x(' };
         break;
       case 'EXP':
         obj = { type: 'sign', sign: 'E' };
         break;
+      case '10ٰx':
+        obj = { type: 'sign', sign: '10' };
+        break;
       case 'Ans':
+        obj = { type: 'sign', sign: keypressed };
+        break;
+      case 'Rnd':
         obj = { type: 'sign', sign: keypressed };
         break;
       case '±':
@@ -149,11 +159,19 @@ export class UtilityService {
       ) {
         // method call to push the entered numbers in calArray.
         this.addnum();
-
+        if (enteredkey.sign === 'Rnd') {
+          const num = Number(Math.random().toFixed(5));
+          if (Number(this.calcArray[this.calcArray.length - 1]))
+            this.calcArray.push(...['x', num]);
+          else this.calcArray.push(num);
+          this.numbers = [];
+          return enteredkey;
+        }
         const array =
           enteredkey.sign === '('
             ? true
             : enteredkey.sign === 'E' ||
+              enteredkey.sign === '10' ||
               enteredkey.type === 'fact' ||
               enteredkey.type === 'pi'
             ? this.calculate([...this.calcArray, enteredkey.sign])
@@ -169,7 +187,7 @@ export class UtilityService {
     return enteredkey;
   }
 
-  trigonometry(array: any, index: number, fun: any) {
+  trigonometry(array: any, index: number, fun: any, isDeg: boolean = false) {
     const start = index,
       end =
         array.slice(0, start).length +
@@ -184,7 +202,7 @@ export class UtilityService {
         )
       ),
       noof = end - start + 1 <= 0 ? 1 : end - start + 1,
-      snum = fun(num);
+      snum = fun(isDeg ? (num * (22 / 7)) / 180 : num);
 
     if (Number(array[start - 1]) && Number(array[end + 1]))
       array.splice(start, noof, 'x', snum, 'x');
@@ -197,8 +215,6 @@ export class UtilityService {
 
   //method that accepts that array and solve the '*','÷' & '%'
   muldiv(array: any): any {
-    console.log(array);
-
     if (array.includes(NaN)) return [NaN];
     if (array.includes('Ans')) {
       this.ans = this.ans ? this.ans : 0;
@@ -265,6 +281,7 @@ export class UtilityService {
         return this.muldiv(array);
       }
     }
+
     if (
       array.includes('sin(') ||
       array.includes('sin-1(') ||
@@ -274,7 +291,8 @@ export class UtilityService {
       array.includes('tan-1(') ||
       array.includes('log(') ||
       array.includes('ln(') ||
-      array.includes('√(')
+      array.includes('√(') ||
+      array.includes('ⁿ√x(')
     ) {
       const sIndex = array.lastIndexOf('sin('),
         asIndex = array.lastIndexOf('sin-1('),
@@ -284,7 +302,8 @@ export class UtilityService {
         atIndex = array.lastIndexOf('tan-1('),
         lIndex = array.lastIndexOf('log('),
         lnIndex = array.lastIndexOf('ln('),
-        rIndex = array.lastIndexOf('√(');
+        rIndex = array.lastIndexOf('√('),
+        nrIndex = array.lastIndexOf('ⁿ√x(');
 
       switch (
         Math.max(
@@ -296,39 +315,106 @@ export class UtilityService {
           atIndex,
           lIndex,
           lnIndex,
-          rIndex
+          rIndex,
+          nrIndex
         )
       ) {
         case acIndex:
-          return this.muldiv(this.trigonometry(array, acIndex, Math.acos));
+          return this.muldiv(
+            this.trigonometry(array, acIndex, Math.acos, this.isDeg)
+          );
         case atIndex:
-          return this.muldiv(this.trigonometry(array, atIndex, Math.atan));
+          return this.muldiv(
+            this.trigonometry(array, atIndex, Math.atan, this.isDeg)
+          );
         case sIndex:
-          return this.muldiv(this.trigonometry(array, sIndex, Math.sin));
+          return this.muldiv(
+            this.trigonometry(array, sIndex, Math.sin, this.isDeg)
+          );
         case asIndex:
-          return this.muldiv(this.trigonometry(array, asIndex, Math.asin));
+          return this.muldiv(
+            this.trigonometry(array, asIndex, Math.asin, this.isDeg)
+          );
         case cIndex:
-          return this.muldiv(this.trigonometry(array, cIndex, Math.cos));
+          return this.muldiv(
+            this.trigonometry(array, cIndex, Math.cos, this.isDeg)
+          );
         case tIndex:
-          return this.muldiv(this.trigonometry(array, tIndex, Math.tan));
+          return this.muldiv(
+            this.trigonometry(array, tIndex, Math.tan, this.isDeg)
+          );
         case lIndex:
           return this.muldiv(this.trigonometry(array, lIndex, Math.log10));
         case rIndex:
           return this.muldiv(this.trigonometry(array, rIndex, Math.sqrt));
         case lnIndex:
           return this.muldiv(this.trigonometry(array, lnIndex, Math.log));
+
+        case nrIndex:
+          if (!Number(array[nrIndex - 1])) return this.muldiv([NaN]);
+          const start = nrIndex,
+            end =
+              array.slice(0, start).length +
+              (array.slice(start).indexOf(')') === -1
+                ? array.slice(start).length - 1
+                : array.slice(start).indexOf(')'));
+
+          const num = this.calculate(
+              array.slice(
+                start + 1,
+                !Number(array[end]) && Number(array[end]) !== 0 ? end : end + 1
+              )
+            ),
+            noof = end - start + 2 <= 0 ? 1 : end - start + 2,
+            snum = Math.pow(num, 1 / array[start - 1]);
+
+          if (Number(array[start - 2]) && Number(array[end + 1])) {
+            array.splice(start - 1, noof, 'x', snum, 'x');
+          } else if (Number(array[start - 2])) {
+            array.splice(start - 1, noof, 'x', snum);
+          } else if (Number(array[end + 1])) {
+            array.splice(start - 1, noof, snum, 'x');
+          } else {
+            array.splice(start - 1, noof, snum);
+          }
+          return this.muldiv(array);
       }
     }
     if (array.includes(')')) {
       return this.muldiv([NaN]);
     }
-    if (array.includes('E')) {
-      const index = array.indexOf('E'),
-        n =
-          array[index - 1] *
-          Math.pow(10, Number(array[index + 1]) ? Number(array[index + 1]) : 0);
 
-      array.splice(index - 1, Number(array[index + 1]) ? 3 : 2, n);
+    if (array.includes('E') || array.includes('10')) {
+      const index =
+          array.indexOf('E') === -1 ? array.indexOf('10') : array.indexOf('E'),
+        n = Number(array[index - 1])
+          ? Number(array[index - 1])
+          : 1 *
+            Math.pow(
+              10,
+              Number(array[index + 1]) ? Number(array[index + 1]) : 0
+            );
+
+      array.splice(
+        Number(array[index - 1]) ? index - 1 : index,
+        Number(array[index - 1])
+          ? Number(array[index + 1])
+            ? 3
+            : 2
+          : Number(array[index + 1])
+          ? 2
+          : 1,
+        n
+      );
+      return this.muldiv(array);
+    }
+    if (array.includes('xⁿ')) {
+      const index = array.indexOf('xⁿ'),
+        num = Math.pow(
+          array[index - 1],
+          Number(array[index + 1]) ? Number(array[index + 1]) : 0
+        );
+      array.splice(index - 1, Number(array[index + 1]) ? 3 : 2, num);
       return this.muldiv(array);
     }
     if (array.includes('%')) {
@@ -440,12 +526,30 @@ export class UtilityService {
 
     this.calcTotal = this.calculate(this.calcArray);
     input.innerHTML = '';
+    let arr = [...this.calcArray].map((value: any) =>
+      value.toString().includes('-1')
+        ? `${value.slice(0, 3)}<sup>${value.slice(3, 5)}</sup>${value.slice(5)}`
+        : value.toString().includes('10')
+        ? `${value.slice(0, 2)}<sup>^</sup>`
+        : value === 'xⁿ'
+        ? '^'
+        : value
+    );
+    arr = this.displaynroot(arr);
 
-    this.calcArray.forEach((value: any) => {
+    arr.forEach((value: any) => {
       const span = document.createElement('span'),
-        signtype = this.identifySign(value === 'E' ? 'EXP' : value);
+        signtype = this.identifySign(
+          value === 'E' ? 'EXP' : value === '10' ? '10ٰx' : value
+        );
       span.innerHTML = value.toString().includes('-1')
         ? `${value.slice(0, 3)}<sup>${value.slice(3, 5)}</sup>${value.slice(5)}`
+        : value.toString().includes('10')
+        ? `${value.slice(0, 2)}<sup>^</sup>`
+        : value === 'xⁿ'
+        ? '^'
+        : value === 'ⁿ√x('
+        ? '√('
         : value;
 
       span.setAttribute('class', signtype.type);
@@ -462,7 +566,13 @@ export class UtilityService {
       this.calcTotal === 0 || this.calcTotal ? this.calcTotal.toString() : '';
   }
 
-  addcalexp(value: string, inputId: string, resutlId: string): boolean {
+  addcalexp(
+    value: string,
+    inputId: string,
+    resutlId: string,
+    isDeg: boolean
+  ): boolean {
+    this.isDeg = isDeg;
     if (this.numbers.length === 1 && Number(this.numbers[0]) === 0) {
       this.numbers.pop();
     }
@@ -520,5 +630,24 @@ export class UtilityService {
     this.forNev(input, enteredkey.type, result);
     this.calc = false;
     return false;
+  }
+
+  displaynroot(array: any): any {
+    if (!array.includes('ⁿ√x(')) return array;
+
+    let index = array.lastIndexOf('ⁿ√x('),
+      num = array[index - 1];
+
+    if (num === ')') {
+      const a = array.slice(0, index - 1).lastIndexOf('(');
+      num = array.slice(a, index).join('');
+      array.splice(a, a + index, num);
+    }
+    console.log(array);
+    index = array.lastIndexOf('ⁿ√x(');
+    array.splice(index - 1, 2, `<sup>${num}</sup>√(`);
+    console.log(array);
+
+    return this.displaynroot(array);
   }
 }

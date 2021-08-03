@@ -6,5 +6,6 @@ import { Injectable } from '@angular/core';
 export class TogglemodeService {
   mode: string = 'light';
   scMode: boolean = false;
+  isDeg: boolean = false;
   constructor() {}
 }

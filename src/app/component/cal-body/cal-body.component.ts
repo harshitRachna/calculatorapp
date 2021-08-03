@@ -54,7 +54,12 @@ export class CalBodyComponent implements OnInit {
       sign: 'log',
       type: 'A',
     },
-    { sign: 'e' },
+    { sign: 'e', isVisible: true },
+    {
+      sign: '10ٰx',
+
+      isHide: true,
+    },
     {
       sign: 'tan',
       type: 'B',
@@ -68,12 +73,19 @@ export class CalBodyComponent implements OnInit {
     },
     {
       sign: '√',
+      isVisible: true,
+    },
+    {
+      sign: 'ⁿ√x',
+
+      isHide: true,
     },
 
-    { sign: 'x²', type: 'C' },
-    { sign: 'Ans', type: 'B' },
+    { sign: 'x²', type: 'B' },
+    { sign: 'Ans', type: 'A', isVisible: true },
+    { sign: 'Rnd', type: 'A', isHide: true },
     { sign: 'EXP' },
-    { sign: 'x' },
+    { sign: 'xⁿ' },
   ];
   buttons = [
     { sign: 'AC', type: 'A' },
@@ -103,21 +115,31 @@ export class CalBodyComponent implements OnInit {
       this.calcexp(e.key);
     });
   }
-  redDeg(t: string) {}
 
   calcexp(clickbtn: any): void {
     switch (clickbtn) {
       case '×':
-        this.showstatus = this.us.addcalexp('*', 'enteredvalue', 'calcresult');
+        this.showstatus = this.us.addcalexp(
+          '*',
+          'enteredvalue',
+          'calcresult',
+          this.toggle.isDeg
+        );
         break;
       case '÷':
-        this.showstatus = this.us.addcalexp('/', 'enteredvalue', 'calcresult');
+        this.showstatus = this.us.addcalexp(
+          '/',
+          'enteredvalue',
+          'calcresult',
+          this.toggle.isDeg
+        );
         break;
       default:
         this.showstatus = this.us.addcalexp(
           clickbtn,
           'enteredvalue',
-          'calcresult'
+          'calcresult',
+          this.toggle.isDeg
         );
         break;
     }
