@@ -526,10 +526,11 @@ export class UtilityService {
 
     this.calcTotal = this.calculate(this.calcArray);
     input.innerHTML = '';
+    debugger;
     let arr = [...this.calcArray].map((value: any) =>
-      value.toString().includes('-1')
+      !Number(value) && value !== 0 && value.includes('-1')
         ? `${value.slice(0, 3)}<sup>${value.slice(3, 5)}</sup>${value.slice(5)}`
-        : value.toString().includes('10')
+        : !Number(value) && value !== 0 && value.includes('10')
         ? `${value.slice(0, 2)}<sup>^</sup>`
         : value === 'xⁿ'
         ? '^'
@@ -542,15 +543,7 @@ export class UtilityService {
         signtype = this.identifySign(
           value === 'E' ? 'EXP' : value === '10' ? '10ٰx' : value
         );
-      span.innerHTML = value.toString().includes('-1')
-        ? `${value.slice(0, 3)}<sup>${value.slice(3, 5)}</sup>${value.slice(5)}`
-        : value.toString().includes('10')
-        ? `${value.slice(0, 2)}<sup>^</sup>`
-        : value === 'xⁿ'
-        ? '^'
-        : value === 'ⁿ√x('
-        ? '√('
-        : value;
+      span.innerHTML = value;
 
       span.setAttribute('class', signtype.type);
       input.appendChild(span);
