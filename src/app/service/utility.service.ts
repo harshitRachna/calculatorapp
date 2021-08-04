@@ -216,11 +216,7 @@ export class UtilityService {
       noof = end - start + 1 <= 0 ? 1 : end - start + 1,
       snum = fun(isDeg ? (num * (22 / 7)) / 180 : num);
 
-    if (Number(array[start - 1]) && Number(array[end + 1]))
-      array.splice(start, noof, 'x', snum, 'x');
-    else if (Number(array[start - 1])) array.splice(start, noof, 'x', snum);
-    else if (Number(array[end + 1])) array.splice(start, noof, snum, 'x');
-    else array.splice(start, noof, snum);
+    array.splice(start, noof, '(', snum, ')');
 
     return array;
   }
@@ -379,15 +375,8 @@ export class UtilityService {
             noof = end - start + 2 <= 0 ? 1 : end - start + 2,
             snum = Math.pow(num, 1 / array[start - 1]);
 
-          if (Number(array[start - 2]) && Number(array[end + 1])) {
-            array.splice(start - 1, noof, 'x', snum, 'x');
-          } else if (Number(array[start - 2])) {
-            array.splice(start - 1, noof, 'x', snum);
-          } else if (Number(array[end + 1])) {
-            array.splice(start - 1, noof, snum, 'x');
-          } else {
-            array.splice(start - 1, noof, snum);
-          }
+          array.splice(start - 1, noof, '(', snum, ')');
+
           return this.muldiv(array);
       }
     }
