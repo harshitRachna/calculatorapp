@@ -141,6 +141,12 @@ export class UtilityService {
 
       // check if user entered number
       if (enteredkey.type === 'number') {
+        if (
+          this.numbers.length === 1 &&
+          this.numbers[0] === 0 &&
+          Number(enteredkey.sign) === 0
+        )
+          this.numbers.pop();
         this.numbers.push(Number(enteredkey.sign));
       }
 
@@ -167,15 +173,21 @@ export class UtilityService {
           this.numbers = [];
           return enteredkey;
         }
+
         const array =
           enteredkey.sign === '('
             ? true
             : enteredkey.sign === 'E' ||
               enteredkey.sign === '10' ||
               enteredkey.type === 'fact' ||
-              enteredkey.type === 'pi'
+              enteredkey.type === 'pi' ||
+              enteredkey.sign === 'Ans'
             ? this.calculate([...this.calcArray, enteredkey.sign])
+            : enteredkey.sign === 'ⁿ√x(' &&
+              this.calcArray[this.calcArray.length - 1] === ')'
+            ? this.calculate([...this.calcArray, enteredkey.sign, 2])
             : this.calculate([...this.calcArray]);
+
         // check if the last value of the calArray is mathematical operator or if the array is empty
         if (array !== 0 ? !array : false) return { type: '', sign: '' };
 
@@ -215,14 +227,14 @@ export class UtilityService {
 
   //method that accepts that array and solve the '*','÷' & '%'
   muldiv(array: any): any {
+    console.log(array);
+
     if (array.includes(NaN)) return [NaN];
     if (array.includes('Ans')) {
       this.ans = this.ans ? this.ans : 0;
       const index = array.indexOf('Ans');
-      if (Number(array[index - 1]) && Number(array[index + 1]))
-        array.splice(index, 1, 'x', this.ans, 'x');
-      else if (Number(array[index - 1])) array.splice(index, 1, 'x', this.ans);
-      else if (Number(array[index + 1])) array.splice(index, 1, this.ans, 'x');
+
+      array.splice(index, 1, '(', this.ans, ')');
 
       return this.muldiv(array);
     }
@@ -253,7 +265,7 @@ export class UtilityService {
             ? array.slice(start).length - 1
             : array.slice(start).indexOf(')'));
 
-      if (!array[start + 1]) {
+      if (!array[start + 1] && array[start + 1] !== 0) {
         array.splice(start, 1);
         return this.muldiv(array);
       }
@@ -275,7 +287,6 @@ export class UtilityService {
 
         return this.muldiv(array);
       } else {
-        // debugger;
         array.splice(start, noof, bnum);
 
         return this.muldiv(array);
@@ -526,7 +537,7 @@ export class UtilityService {
 
     this.calcTotal = this.calculate(this.calcArray);
     input.innerHTML = '';
-    debugger;
+
     let arr = [...this.calcArray].map((value: any) =>
       !Number(value) && value !== 0 && value.includes('-1')
         ? `${value.slice(0, 3)}<sup>${value.slice(3, 5)}</sup>${value.slice(5)}`
@@ -566,10 +577,6 @@ export class UtilityService {
     isDeg: boolean
   ): boolean {
     this.isDeg = isDeg;
-    if (this.numbers.length === 1 && Number(this.numbers[0]) === 0) {
-      this.numbers.pop();
-    }
-
     const span = document.createElement('span'),
       enteredkey = this.operationsOnSign(this.identifySign(value)),
       input = document.getElementById(inputId) as HTMLElement,
@@ -591,7 +598,7 @@ export class UtilityService {
       if (this.calculate(this.calcArray)) {
         this.calcTotal = this.calculate(this.calcArray);
         this.ans = this.calcTotal;
-        this.numbers = [];
+        this.numbers = [this.calcTotal];
       }
       this.calcArray = [];
       input.innerHTML =
@@ -632,14 +639,13 @@ export class UtilityService {
       num = array[index - 1];
 
     if (num === ')') {
-      const a = array.slice(0, index - 1).lastIndexOf('(');
+      const a = Math.max(array.slice(0, index - 1).lastIndexOf('('));
       num = array.slice(a, index).join('');
       array.splice(a, a + index, num);
     }
-    console.log(array);
+
     index = array.lastIndexOf('ⁿ√x(');
     array.splice(index - 1, 2, `<sup>${num}</sup>√(`);
-    console.log(array);
 
     return this.displaynroot(array);
   }
