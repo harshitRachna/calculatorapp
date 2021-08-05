@@ -214,7 +214,7 @@ export class UtilityService {
         )
       ),
       noof = end - start + 1 <= 0 ? 1 : end - start + 1,
-      snum = fun(isDeg ? (num * (22 / 7)) / 180 : num);
+      snum = fun(isDeg ? (num * Math.PI) / 180 : num);
 
     array.splice(start, noof, '(', snum, ')');
 
@@ -233,10 +233,9 @@ export class UtilityService {
       return this.muldiv(array);
     }
     if (array.includes('𝛑')) {
-      const index = array.indexOf('𝛑'),
-        pi = 22 / 7;
+      const index = array.indexOf('𝛑');
 
-      array.splice(index, 1, '(', pi, ')');
+      array.splice(index, 1, '(', Math.PI, ')');
 
       return this.muldiv(array);
     }
@@ -249,44 +248,6 @@ export class UtilityService {
       return this.muldiv(array);
     }
 
-    if (array.includes('(') || array.includes('sqr(')) {
-      let start = array.includes('(')
-          ? array.lastIndexOf('(')
-          : array.lastIndexOf('sqr('),
-        end =
-          array.slice(0, start).length +
-          (array.slice(start).indexOf(')') === -1
-            ? array.slice(start).length - 1
-            : array.slice(start).indexOf(')'));
-
-      if (!array[start + 1] && array[start + 1] !== 0) {
-        array.splice(start, 1);
-        return this.muldiv(array);
-      }
-
-      let numw = this.calculate(
-          array.slice(start + 1, array[end] === ')' ? end : end + 1)
-        ),
-        bnum = array.includes('(') ? numw : numw * numw;
-      const noof = end - start + 1 <= 0 ? 1 : end - start + 1;
-
-      if (Number(array[start - 1])) {
-        if (Number(array[end + 1]) && array.length > end)
-          array.splice(start, noof, 'x', bnum, 'x');
-        else array.splice(start, noof, 'x', bnum);
-
-        return this.muldiv(array);
-      } else if (Number(array[end + 1]) && array[start + 1] !== array[end]) {
-        array.splice(start, noof, bnum, 'x');
-
-        return this.muldiv(array);
-      } else {
-        array.splice(start, noof, bnum);
-
-        return this.muldiv(array);
-      }
-    }
-
     if (
       array.includes('sin(') ||
       array.includes('sin-1(') ||
@@ -297,7 +258,9 @@ export class UtilityService {
       array.includes('log(') ||
       array.includes('ln(') ||
       array.includes('√(') ||
-      array.includes('ⁿ√x(')
+      array.includes('ⁿ√x(') ||
+      array.includes('(') ||
+      array.includes('sqr(')
     ) {
       const sIndex = array.lastIndexOf('sin('),
         asIndex = array.lastIndexOf('sin-1('),
@@ -308,12 +271,16 @@ export class UtilityService {
         lIndex = array.lastIndexOf('log('),
         lnIndex = array.lastIndexOf('ln('),
         rIndex = array.lastIndexOf('√('),
-        nrIndex = array.lastIndexOf('ⁿ√x(');
+        nrIndex = array.lastIndexOf('ⁿ√x('),
+        bIndex = array.lastIndexOf('('),
+        sqrIndex = array.lastIndexOf('sqr(');
 
       switch (
         Math.max(
           sIndex,
+          bIndex,
           asIndex,
+          sqrIndex,
           cIndex,
           acIndex,
           tIndex,
@@ -324,6 +291,44 @@ export class UtilityService {
           nrIndex
         )
       ) {
+        case bIndex: {
+          let start = bIndex,
+            end =
+              array.slice(0, start).length +
+              (array.slice(start).indexOf(')') === -1
+                ? array.slice(start).length - 1
+                : array.slice(start).indexOf(')'));
+
+          if (!array[start + 1] && array[start + 1] !== 0) {
+            array.splice(start, 1);
+            return this.muldiv(array);
+          }
+
+          let numw = this.calculate(
+              array.slice(start + 1, array[end] === ')' ? end : end + 1)
+            ),
+            bnum = numw;
+          const noof = end - start + 1 <= 0 ? 1 : end - start + 1;
+
+          if (Number(array[start - 1])) {
+            if (Number(array[end + 1]) && array.length > end)
+              array.splice(start, noof, 'x', bnum, 'x');
+            else array.splice(start, noof, 'x', bnum);
+
+            return this.muldiv(array);
+          } else if (
+            Number(array[end + 1]) &&
+            array[start + 1] !== array[end]
+          ) {
+            array.splice(start, noof, bnum, 'x');
+
+            return this.muldiv(array);
+          } else {
+            array.splice(start, noof, bnum);
+
+            return this.muldiv(array);
+          }
+        }
         case acIndex:
           return this.muldiv(
             this.trigonometry(array, acIndex, Math.acos, this.isDeg)
@@ -355,7 +360,7 @@ export class UtilityService {
         case lnIndex:
           return this.muldiv(this.trigonometry(array, lnIndex, Math.log));
 
-        case nrIndex:
+        case nrIndex: {
           if (!Number(array[nrIndex - 1])) return this.muldiv([NaN]);
           const start = nrIndex,
             end =
@@ -376,6 +381,30 @@ export class UtilityService {
           array.splice(start - 1, noof, '(', snum, ')');
 
           return this.muldiv(array);
+        }
+
+        case sqrIndex: {
+          if (!Number(array[nrIndex - 1])) return this.muldiv([NaN]);
+          const start = sqrIndex,
+            end =
+              array.slice(0, start).length +
+              (array.slice(start).indexOf(')') === -1
+                ? array.slice(start).length - 1
+                : array.slice(start).indexOf(')'));
+
+          const num = this.calculate(
+              array.slice(
+                start + 1,
+                !Number(array[end]) && Number(array[end]) !== 0 ? end : end + 1
+              )
+            ),
+            noof = end - start + 2 <= 0 ? 1 : end - start + 2,
+            snum = Math.pow(num, 2);
+
+          array.splice(start - 1, noof, '(', snum, ')');
+
+          return this.muldiv(array);
+        }
       }
     }
     if (array.includes(')')) {
