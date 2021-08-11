@@ -12,7 +12,11 @@ import { UtilityService } from 'src/app/service/utility.service';
 export class CalBodyComponent implements OnInit {
   showstatus: boolean = false;
   invsci: boolean = false;
-  constructor(public toggle: TogglemodeService, private btnData:BtnDataService, private us: UtilityService) {}
+  constructor(
+    public toggle: TogglemodeService,
+    private btnData: BtnDataService,
+    private us: UtilityService
+  ) {}
   // calculator buttons in order
   scbutton: any = this.btnData.scbutton;
   buttons = this.btnData.buttons;
@@ -20,6 +24,12 @@ export class CalBodyComponent implements OnInit {
     window?.addEventListener('keyup', (e) => {
       this.calcexp(e.key);
     });
+  }
+
+  degRad(type: string) {
+    this.toggle.isDeg = type === 'r' ? false : true;
+
+    this.calcexp('DegRad');
   }
 
   calcexp(clickbtn: any): void {

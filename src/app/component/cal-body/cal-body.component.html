@@ -15,8 +15,8 @@
             :btn.sign}}</button>
     </div>
     <div class="claculator-keys sci-mode" *ngIf="toggle.scMode">
-        <button class=" red-deg" [ngClass]="{'active': !toggle.isDeg}" (click)="toggle.isDeg = false">Rad</button>
-        <button class="red-deg" [ngClass]="{'active': toggle.isDeg}" (click)="toggle.isDeg = true">Deg</button>
+        <button class=" red-deg" [ngClass]="{'active': !toggle.isDeg}" (click)="degRad('r')">Rad</button>
+        <button class="red-deg" [ngClass]="{'active': toggle.isDeg}" (click)="degRad('d')">Deg</button>
         <button [ngClass]="{'active': invsci}" (click)=" invsci = ! invsci">Inv</button>
         <ng-container *ngFor='let btn of scbutton'>
             <button class="sign-type{{btn.type}}" *ngIf="btn.isVisible? !invsci : btn.isHide? invsci : true"

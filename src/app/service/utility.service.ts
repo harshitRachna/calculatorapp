@@ -177,7 +177,7 @@ export class UtilityService {
               enteredkey.sign === 'Ans'
             ? this.calculate([...this.calcArray, enteredkey.sign])
             : enteredkey.sign === 'ⁿ√x(' &&
-              this.calcArray[this.calcArray.length - 1] === ')'
+              !Number(this.calcArray[this.calcArray.length - 1])
             ? this.calculate([...this.calcArray, enteredkey.sign, 2])
             : this.calculate([...this.calcArray]);
 
@@ -242,7 +242,43 @@ export class UtilityService {
 
       return this.calculateArray(array);
     }
+    if (array.includes('(')) {
+      {
+        let start = array.lastIndexOf('('),
+          end =
+            array.slice(0, start).length +
+            (array.slice(start).indexOf(')') === -1
+              ? array.slice(start).length - 1
+              : array.slice(start).indexOf(')'));
 
+        if (!array[start + 1] && array[start + 1] !== 0) {
+          array.splice(start, 1);
+          return this.calculateArray(array);
+        }
+
+        let numw = this.calculate(
+            array.slice(start + 1, array[end] === ')' ? end : end + 1)
+          ),
+          bnum = numw;
+        const noof = end - start + 1 <= 0 ? 1 : end - start + 1;
+
+        if (Number(array[start - 1])) {
+          if (Number(array[end + 1]) && array.length > end)
+            array.splice(start, noof, 'x', bnum, 'x');
+          else array.splice(start, noof, 'x', bnum);
+
+          return this.calculateArray(array);
+        } else if (Number(array[end + 1]) && array[start + 1] !== array[end]) {
+          array.splice(start, noof, bnum, 'x');
+
+          return this.calculateArray(array);
+        } else {
+          array.splice(start, noof, bnum);
+
+          return this.calculateArray(array);
+        }
+      }
+    }
     if (
       array.includes('sin(') ||
       array.includes('sin-1(') ||
@@ -254,7 +290,6 @@ export class UtilityService {
       array.includes('ln(') ||
       array.includes('√(') ||
       array.includes('ⁿ√x(') ||
-      array.includes('(') ||
       array.includes('sqr(')
     ) {
       const sIndex = array.lastIndexOf('sin('),
@@ -267,13 +302,12 @@ export class UtilityService {
         lnIndex = array.lastIndexOf('ln('),
         rIndex = array.lastIndexOf('√('),
         nrIndex = array.lastIndexOf('ⁿ√x('),
-        bIndex = array.lastIndexOf('('),
         sqrIndex = array.lastIndexOf('sqr(');
 
       switch (
         Math.max(
           sIndex,
-          bIndex,
+
           asIndex,
           sqrIndex,
           cIndex,
@@ -286,44 +320,6 @@ export class UtilityService {
           nrIndex
         )
       ) {
-        case bIndex: {
-          let start = bIndex,
-            end =
-              array.slice(0, start).length +
-              (array.slice(start).indexOf(')') === -1
-                ? array.slice(start).length - 1
-                : array.slice(start).indexOf(')'));
-
-          if (!array[start + 1] && array[start + 1] !== 0) {
-            array.splice(start, 1);
-            return this.calculateArray(array);
-          }
-
-          let numw = this.calculate(
-              array.slice(start + 1, array[end] === ')' ? end : end + 1)
-            ),
-            bnum = numw;
-          const noof = end - start + 1 <= 0 ? 1 : end - start + 1;
-
-          if (Number(array[start - 1])) {
-            if (Number(array[end + 1]) && array.length > end)
-              array.splice(start, noof, 'x', bnum, 'x');
-            else array.splice(start, noof, 'x', bnum);
-
-            return this.calculateArray(array);
-          } else if (
-            Number(array[end + 1]) &&
-            array[start + 1] !== array[end]
-          ) {
-            array.splice(start, noof, bnum, 'x');
-
-            return this.calculateArray(array);
-          } else {
-            array.splice(start, noof, bnum);
-
-            return this.calculateArray(array);
-          }
-        }
         case acIndex:
           return this.calculateArray(
             this.trigonometry(array, acIndex, Math.acos, this.isDeg)
@@ -385,7 +381,6 @@ export class UtilityService {
         }
 
         case sqrIndex: {
-          if (!Number(array[nrIndex - 1])) return this.calculateArray([NaN]);
           const start = sqrIndex,
             end =
               array.slice(0, start).length +
@@ -399,10 +394,10 @@ export class UtilityService {
                 !Number(array[end]) && Number(array[end]) !== 0 ? end : end + 1
               )
             ),
-            noof = end - start + 2 <= 0 ? 1 : end - start + 2,
-            snum = Math.pow(num, 2);
+            noof = end - start + 1 <= 0 ? 1 : end - start + 1,
+            snum = num * num;
 
-          array.splice(start - 1, noof, '(', snum, ')');
+          array.splice(start, noof, '(', snum, ')');
 
           return this.calculateArray(array);
         }
@@ -516,7 +511,7 @@ export class UtilityService {
         }
     });
 
-    return num ? Number(num.toFixed(4)) : num;
+    return num;
   }
 
   backspace() {
@@ -574,7 +569,9 @@ export class UtilityService {
     });
 
     result.textContent =
-      this.calcTotal === 0 || this.calcTotal ? this.calcTotal.toString() : '';
+      this.calcTotal === 0 || this.calcTotal
+        ? Number(this.calcTotal.toFixed(4)).toString()
+        : '';
   }
   clean(input: HTMLElement, result: HTMLElement) {
     input.innerHTML = '';
@@ -610,14 +607,14 @@ export class UtilityService {
       this.calcArray = [];
 
       input.innerHTML =
-        this.calcTotal.toString().length > 12
-          ? this.calcTotal.toString().slice(0, 12)
+        Number(this.calcTotal.toFixed(4)).toString().length > 12
+          ? Number(this.calcTotal.toFixed(4)).toString().slice(0, 12)
           : !this.calcTotal && this.calcTotal !== 0
           ? 'Expression Error'
-          : this.calcTotal.toString();
+          : Number(this.calcTotal.toFixed(4)).toString();
       result.innerHTML =
-        this.calcTotal.toString().length > 12
-          ? this.calcTotal.toString().slice(12)
+        Number(this.calcTotal.toFixed(4)).toString().length > 12
+          ? Number(this.calcTotal.toFixed(4)).toString().slice(12)
           : '';
 
       this.calc = true;
