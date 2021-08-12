@@ -31,20 +31,31 @@ export class UtilityService {
       case '%':
       case 'xⁿ':
       case 'Ans':
+      case 'a':
       case 'Rnd':
+      case 'r':
+        keypressed =
+          keypressed === 'r' ? 'Rnd' : keypressed === 'a' ? 'Ans' : keypressed;
         obj = { type: 'sign', sign: keypressed };
         break;
+      case '^':
+        obj = { type: 'sign', sign: 'xⁿ' };
+        break;
       case 'ⁿ√x':
+      case '<':
         obj = { type: 'sign', sign: 'ⁿ√x(' };
         break;
       case 'EXP':
+      case 'E':
         obj = { type: 'sign', sign: 'E' };
         break;
       case '10ٰx':
+      case 'X':
         obj = { type: 'sign', sign: '10' };
         break;
 
       case '±':
+      case '`':
         obj = { type: 'nev', sign: '-' };
         break;
       case '*':
@@ -70,7 +81,8 @@ export class UtilityService {
         obj = { type: 'bracket', sign: keypressed };
         break;
       case 'x²':
-        obj = { type: 'sq2', sign: keypressed };
+      case '@':
+        obj = { type: 'sq2', sign: 'x²' };
         break;
       case 'sin':
       case 'sin-1':
@@ -83,11 +95,38 @@ export class UtilityService {
       case '√':
         obj = { type: 'sin', sign: keypressed };
         break;
+      case 's':
+        obj = { type: 'sin', sign: 'sin' };
+        break;
+      case 'c':
+        obj = { type: 'sin', sign: 'cos' };
+        break;
+      case 'C':
+        obj = { type: 'sin', sign: 'cos-1' };
+        break;
+      case 't':
+        obj = { type: 'sin', sign: 'tan' };
+        break;
+      case 'T':
+        obj = { type: 'sin', sign: 'tan-1' };
+        break;
+      case 'S':
+        obj = { type: 'sin', sign: 'sin-1' };
+        break;
+      case 'l':
+        obj = { type: 'sin', sign: 'log' };
+        break;
+      case 'L':
+        obj = { type: 'sin', sign: 'ln' };
+        break;
       case 'x!':
+      case '!':
         obj = { type: 'fact', sign: '!' };
         break;
+      case 'p':
       case '𝛑':
       case 'e':
+        keypressed = keypressed === 'p' ? '𝛑' : keypressed;
         obj = { type: 'pi', sign: keypressed };
         break;
       case '=':
@@ -95,6 +134,7 @@ export class UtilityService {
         obj = { type: 'cal', sign: '=' };
         break;
       case 'AC':
+      case 'Escape':
         obj = { type: 'clean', sign: 'AC' };
         break;
       default:
@@ -410,13 +450,9 @@ export class UtilityService {
     if (array.includes('E') || array.includes('10')) {
       const index =
           array.indexOf('E') === -1 ? array.indexOf('10') : array.indexOf('E'),
-        n = Number(array[index - 1])
-          ? Number(array[index - 1])
-          : 1 *
-            Math.pow(
-              10,
-              Number(array[index + 1]) ? Number(array[index + 1]) : 0
-            );
+        n =
+          (Number(array[index - 1]) ? Number(array[index - 1]) : 1) *
+          Math.pow(10, Number(array[index + 1]) ? Number(array[index + 1]) : 0);
 
       array.splice(
         Number(array[index - 1]) ? index - 1 : index,
@@ -553,7 +589,11 @@ export class UtilityService {
     formatedArr.forEach((value: number | string) => {
       const span = document.createElement('span'),
         signtype = this.identifySign(
-          `${value}` === 'E' ? 'EXP' : `${value}` === '10' ? '10ٰx' : `${value}`
+          `${value}` === 'E<sup>^</sup>'
+            ? 'EXP'
+            : `${value}` === '10<sup>^</sup>'
+            ? '10ٰx'
+            : `${value}`
         );
       span.innerHTML = `${value}`;
 
@@ -638,8 +678,9 @@ export class UtilityService {
     array = array.map((value: any) =>
       !Number(value) && value !== 0 && value.includes('-1')
         ? `${value.slice(0, 3)}<sup>${value.slice(3, 5)}</sup>${value.slice(5)}`
-        : !Number(value) && value !== 0 && value.includes('10')
-        ? `${value.slice(0, 2)}<sup>^</sup>`
+        : typeof value === 'string' &&
+          (value.includes('10') || value.includes('E'))
+        ? `${value}<sup>^</sup>`
         : value === 'xⁿ'
         ? '^'
         : value

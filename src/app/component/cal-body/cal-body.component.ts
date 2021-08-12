@@ -22,6 +22,10 @@ export class CalBodyComponent implements OnInit {
   buttons = this.btnData.buttons;
   ngOnInit(): void {
     window?.addEventListener('keyup', (e) => {
+      if (e.key === '#') {
+        this.degRad(this.toggle.isDeg ? 'r' : 'd');
+        return;
+      }
       this.calcexp(e.key);
     });
   }
